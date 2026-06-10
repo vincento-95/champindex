@@ -6,6 +6,7 @@ import { useState } from 'react';
 import { useFavorites, useFinds, useNotes, type ForagingFind } from '../hooks/useNotebook';
 import { FORAGING_SPECIES } from '../lib/foraging-db';
 import type { ForagingCategory } from '../types';
+import { IconMushroom, IconLocationLeaf } from './Icons';
 
 interface NotebookProps {
   onBack: () => void;
@@ -39,18 +40,18 @@ function FindForm({
 
   const species = FORAGING_SPECIES.find(s => s.id === speciesId);
 
-  const fieldClass = `w-full bg-white/5 border border-white/10 rounded-xl text-sm text-white/90
-    placeholder:text-white/25 px-3 py-3 focus:outline-none focus:ring-2 focus:ring-emerald-500/60 focus:border-transparent`;
-  const labelClass = 'block text-xs font-bold uppercase tracking-wider text-white/40 mb-1';
+  const fieldClass = `w-full bg-paper-raised border border-line rounded-xl text-sm text-ink
+    placeholder:text-ink-faint px-3 py-3 focus:outline-none focus:border-moss`;
+  const labelClass = 'block text-[10px] font-bold uppercase tracking-[0.18em] text-ink-faint mb-1';
 
   return (
-    <div className="rounded-2xl bg-white/5 border border-white/10 p-4">
+    <div className="rounded-2xl bg-paper-raised border border-line p-4">
       {/* Form header */}
       <div className="flex justify-between items-center mb-5">
-        <h2 className="text-lg font-bold">Nouvelle trouvaille</h2>
+        <h2 className="font-display text-lg font-bold text-ink">Nouvelle trouvaille</h2>
         <button
           onClick={onCancel}
-          className="w-11 h-11 -mr-2 flex items-center justify-center rounded-full text-white/40 hover:text-white/70 hover:bg-white/5 transition-colors"
+          className="w-11 h-11 -mr-2 flex items-center justify-center rounded-full text-ink-faint hover:text-ink hover:bg-paper-deep transition-colors"
           aria-label="Fermer"
         >
           <span className="material-symbols-outlined">close</span>
@@ -68,7 +69,7 @@ function FindForm({
           >
             <option value="">Choisir une espèce...</option>
             {FORAGING_SPECIES.map(s => (
-              <option key={s.id} value={s.id}>{s.emoji} {s.nom}</option>
+              <option key={s.id} value={s.id}>{s.nom}</option>
             ))}
           </select>
         </div>
@@ -77,7 +78,7 @@ function FindForm({
         <div>
           <label className={labelClass}>Lieu</label>
           <div className="relative">
-            <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-white/30 text-lg pointer-events-none">
+            <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-ink-faint text-lg pointer-events-none">
               location_on
             </span>
             <input
@@ -129,7 +130,7 @@ function FindForm({
         <div className="flex gap-3 pt-2">
           <button
             onClick={onCancel}
-            className="flex-1 py-3 rounded-xl bg-white/5 text-sm font-bold text-white/60 hover:bg-white/10 transition-colors"
+            className="flex-1 py-3 rounded-xl bg-paper-raised border border-line-strong text-sm font-medium text-ink hover:bg-paper-deep transition-colors"
           >
             Annuler
           </button>
@@ -148,8 +149,8 @@ function FindForm({
               });
             }}
             disabled={!speciesId}
-            className="flex-[2] py-3 rounded-xl bg-[#ec5b13] text-sm text-white font-bold
-              hover:bg-[#d95210] transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+            className="flex-[2] py-3 rounded-xl bg-moss text-sm text-paper font-medium
+              hover:bg-moss-deep transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
           >
             Enregistrer
           </button>
@@ -184,27 +185,27 @@ export default function Notebook({ onBack, selectedCategory }: NotebookProps) {
 
   return (
     <div className="min-h-screen flex flex-col">
-      {/* Header (Stitch style) */}
-      <header className="sticky top-0 z-10 bg-[#1a2215]/95 backdrop-blur-md border-b border-white/10 px-4 pt-6 pb-4">
+      {/* Header */}
+      <header className="sticky top-0 z-10 bg-paper/95 backdrop-blur-md border-b border-line px-4 pt-6 pb-4">
         <div className="flex items-center justify-between">
           <button onClick={onBack}
-            className="w-10 h-10 flex items-center justify-center rounded-full bg-white/5 hover:bg-white/10 transition-colors">
+            className="w-10 h-10 flex items-center justify-center rounded-full bg-paper-raised border border-line text-ink hover:bg-paper-deep transition-colors">
             <span className="material-symbols-outlined text-2xl">arrow_back</span>
           </button>
-          <h1 className="text-xl font-bold tracking-tight">Mon carnet</h1>
+          <h1 className="font-display text-xl font-bold tracking-tight text-ink">Mon carnet</h1>
           <div className="w-10" />
         </div>
 
-        {/* Pill tabs (Stitch style) */}
+        {/* Pill tabs */}
         <div className="flex mt-6 gap-2 overflow-x-auto scrollbar-hide">
           {tabs.map(t => (
             <button
               key={t.id}
               onClick={() => setTab(t.id)}
-              className={`flex items-center gap-2 px-4 py-2 min-h-11 rounded-full text-sm whitespace-nowrap transition-all active:scale-95 ${
+              className={`flex items-center gap-2 px-4 py-2 min-h-11 rounded-full text-sm whitespace-nowrap border transition-all active:scale-95 ${
                 tab === t.id
-                  ? 'bg-[#ec5b13] text-white font-semibold'
-                  : 'bg-white/5 text-white/50 font-medium hover:bg-white/10'
+                  ? 'bg-moss border-moss text-paper font-semibold'
+                  : 'bg-paper-raised border-line text-ink-soft font-medium hover:bg-paper-deep'
               }`}
             >
               <span className="material-symbols-outlined text-lg" style={tab === t.id ? { fontVariationSettings: "'FILL' 1" } : undefined}>
@@ -212,7 +213,7 @@ export default function Notebook({ onBack, selectedCategory }: NotebookProps) {
               </span>
               {t.label}
               {tab === t.id && t.count > 0 && (
-                <span className="bg-white/20 px-2 py-0.5 rounded-full text-xs font-bold">
+                <span className="bg-paper/25 text-paper px-2 py-0.5 rounded-full text-xs font-bold">
                   {t.count}
                 </span>
               )}
@@ -228,32 +229,32 @@ export default function Notebook({ onBack, selectedCategory }: NotebookProps) {
         {tab === 'favorites' && (
           <>
             {filteredFavorites.length === 0 ? (
-              <div className="flex flex-col items-center justify-center text-center py-12 opacity-40">
-                <span className="text-6xl mb-4">❤️</span>
-                <p className="text-sm font-medium">Aucun favori pour l'instant.</p>
-                <p className="text-xs max-w-[220px] mt-1">Ouvrez une fiche espèce et appuyez sur le coeur.</p>
+              <div className="flex flex-col items-center justify-center text-center py-12">
+                <IconMushroom size={48} className="text-ink-faint mb-4" />
+                <p className="text-sm font-medium text-ink-soft">Aucun favori pour l'instant.</p>
+                <p className="text-xs text-ink-faint max-w-[220px] mt-1">Ouvrez une fiche espèce et appuyez sur le coeur.</p>
               </div>
             ) : (
               <>
                 <div className="flex items-center justify-between">
-                  <h3 className="font-bold text-lg">Mes Favoris</h3>
-                  <span className="text-xs text-white/40 uppercase font-bold tracking-wider">
+                  <h3 className="font-display font-bold text-lg text-ink">Mes Favoris</h3>
+                  <span className="text-[10px] text-ink-faint uppercase font-bold tracking-[0.18em]">
                     {filteredFavorites.length} espèce{filteredFavorites.length > 1 ? 's' : ''}
                   </span>
                 </div>
                 <div className="space-y-3">
                   {filteredFavorites.map(sp => (
-                    <div key={sp.id} className="flex items-center gap-4 p-4 rounded-xl bg-white/5 border border-white/5 shadow-sm">
-                      <div className="w-16 h-16 shrink-0 rounded-lg bg-[#ec5b13]/10 flex items-center justify-center text-3xl">
+                    <div key={sp.id} className="flex items-center gap-4 p-4 rounded-xl bg-paper-raised border border-line">
+                      <div className="w-16 h-16 shrink-0 rounded-lg bg-paper-deep flex items-center justify-center text-3xl">
                         {sp.emoji}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <h4 className="font-bold text-base truncate">{sp.nom}</h4>
-                        <p className="text-xs italic text-white/40 truncate">{sp.latin}</p>
+                        <h4 className="font-display font-bold text-base text-ink truncate">{sp.nom}</h4>
+                        <p className="text-xs italic text-ink-faint truncate">{sp.latin}</p>
                       </div>
                       <button
                         onClick={() => toggleFavorite(sp.id)}
-                        className="w-11 h-11 shrink-0 flex items-center justify-center rounded-full text-[#ec5b13] hover:bg-white/5 transition-colors"
+                        className="w-11 h-11 shrink-0 flex items-center justify-center rounded-full text-terra hover:bg-paper-deep transition-colors"
                         aria-label={`Retirer ${sp.nom} des favoris`}
                       >
                         <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>
@@ -283,53 +284,55 @@ export default function Notebook({ onBack, selectedCategory }: NotebookProps) {
               <>
                 <button
                   onClick={() => setShowAddFind(true)}
-                  className="w-full flex items-center justify-center gap-2 py-4 rounded-xl bg-emerald-600/20
-                    border-2 border-dashed border-emerald-500/30 text-emerald-400 text-sm font-bold
-                    hover:bg-emerald-600/30 transition-colors mb-2"
+                  className="w-full flex items-center justify-center gap-2 py-4 rounded-xl bg-moss-wash/40
+                    border-2 border-dashed border-moss text-moss text-sm font-medium
+                    hover:bg-moss-wash transition-colors mb-2"
                 >
                   <span className="material-symbols-outlined">add_circle</span>
                   Ajouter une trouvaille
                 </button>
 
                 {finds.length === 0 ? (
-                  <div className="flex flex-col items-center justify-center text-center py-12 opacity-40">
-                    <span className="text-6xl mb-4">📍</span>
-                    <p className="text-sm font-medium">Aucune trouvaille enregistrée.</p>
-                    <p className="text-xs max-w-[220px] mt-1">Enregistrez vos cueillettes pour vous souvenir des bons coins !</p>
+                  <div className="flex flex-col items-center justify-center text-center py-12">
+                    <IconLocationLeaf size={48} className="text-ink-faint mb-4" />
+                    <p className="text-sm font-medium text-ink-soft">Aucune trouvaille enregistrée.</p>
+                    <p className="text-xs text-ink-faint max-w-[220px] mt-1">Enregistrez vos cueillettes pour vous souvenir des bons coins !</p>
                   </div>
                 ) : (
                   <>
-                    <h3 className="font-bold text-lg pt-2">Dernières trouvailles</h3>
+                    <h3 className="font-display font-bold text-lg text-ink pt-2">Dernières trouvailles</h3>
                     <div className="space-y-4 mt-3">
                       {finds
                         .sort((a, b) => b.createdAt - a.createdAt)
                         .map(find => (
-                        <div key={find.id} className="p-4 rounded-xl bg-white/5 border border-white/5 shadow-sm">
+                        <div key={find.id} className="p-4 rounded-xl bg-paper-raised border border-line">
                           <div className="flex gap-4">
-                            <div className="text-3xl">{find.speciesEmoji}</div>
+                            <div className="w-12 h-12 shrink-0 rounded-lg bg-paper-deep flex items-center justify-center text-2xl">
+                              {find.speciesEmoji}
+                            </div>
                             <div className="flex-1 min-w-0">
-                              <h4 className="font-bold truncate">{find.speciesName}</h4>
+                              <h4 className="font-display font-bold text-ink truncate">{find.speciesName}</h4>
                               <div className="flex items-center flex-wrap gap-x-3 gap-y-1 mt-1">
                                 {find.locationName && (
-                                  <div className="flex items-center gap-1 text-xs text-white/40 min-w-0">
+                                  <div className="flex items-center gap-1 text-xs text-ink-faint min-w-0">
                                     <span className="material-symbols-outlined text-sm shrink-0">location_on</span>
                                     <span className="truncate">{find.locationName}</span>
                                   </div>
                                 )}
-                                <div className="flex items-center gap-1 text-xs text-white/40">
+                                <div className="flex items-center gap-1 text-xs text-ink-faint">
                                   <span className="material-symbols-outlined text-sm shrink-0">calendar_today</span>
                                   {formatFindDate(find.date)}
                                 </div>
                               </div>
                               {find.quantity && (
                                 <div className="mt-2 flex items-center gap-2">
-                                  <span className="text-xs px-2 py-1 rounded bg-white/10 text-white/50">
+                                  <span className="text-xs px-2 py-1 rounded bg-paper-deep text-ink-soft">
                                     Quantité : {find.quantity}
                                   </span>
                                 </div>
                               )}
                               {find.notes && (
-                                <p className="mt-2 text-sm text-white/50 italic leading-relaxed">
+                                <p className="mt-2 text-sm text-ink-soft italic leading-relaxed">
                                   "{find.notes}"
                                 </p>
                               )}
@@ -337,7 +340,7 @@ export default function Notebook({ onBack, selectedCategory }: NotebookProps) {
                             <button
                               onClick={() => deleteFind(find.id)}
                               className="w-11 h-11 -mr-2 -mt-2 shrink-0 flex items-center justify-center rounded-full
-                                text-white/30 hover:text-red-400 hover:bg-white/5 transition-colors"
+                                text-ink-faint hover:text-danger hover:bg-paper-deep transition-colors"
                               aria-label={`Supprimer la trouvaille ${find.speciesName}`}
                             >
                               <span className="material-symbols-outlined">delete</span>
@@ -357,10 +360,10 @@ export default function Notebook({ onBack, selectedCategory }: NotebookProps) {
         {tab === 'notes' && (
           <>
             {notes.length === 0 ? (
-              <div className="flex flex-col items-center justify-center text-center py-12 opacity-40">
-                <span className="text-6xl mb-4">📓</span>
-                <p className="text-sm font-medium">Aucune note.</p>
-                <p className="text-xs max-w-[220px] mt-1">Ouvrez une fiche espèce pour ajouter des notes personnelles.</p>
+              <div className="flex flex-col items-center justify-center text-center py-12">
+                <span className="material-symbols-outlined text-ink-faint mb-4" style={{ fontSize: 48 }}>edit_note</span>
+                <p className="text-sm font-medium text-ink-soft">Aucune note.</p>
+                <p className="text-xs text-ink-faint max-w-[220px] mt-1">Ouvrez une fiche espèce pour ajouter des notes personnelles.</p>
               </div>
             ) : (
               <div className="space-y-3">
@@ -369,17 +372,19 @@ export default function Notebook({ onBack, selectedCategory }: NotebookProps) {
                   .map(note => {
                     const sp = FORAGING_SPECIES.find(s => s.id === note.speciesId);
                     return (
-                      <div key={note.id} className="p-4 rounded-xl bg-white/5 border border-white/5 shadow-sm">
+                      <div key={note.id} className="p-4 rounded-xl bg-paper-raised border border-line">
                         <div className="flex items-center gap-3 mb-2">
-                          <div className="w-10 h-10 shrink-0 rounded-lg bg-[#ec5b13]/10 flex items-center justify-center text-xl">
-                            {sp?.emoji || '📝'}
+                          <div className="w-10 h-10 shrink-0 rounded-lg bg-paper-deep flex items-center justify-center text-xl">
+                            {sp?.emoji || (
+                              <span className="material-symbols-outlined text-lg text-ink-faint">notes</span>
+                            )}
                           </div>
-                          <h4 className="font-bold text-sm flex-1 min-w-0 truncate">{note.speciesName}</h4>
-                          <span className="text-[10px] text-white/30 shrink-0">
+                          <h4 className="font-display font-bold text-sm text-ink flex-1 min-w-0 truncate">{note.speciesName}</h4>
+                          <span className="text-[10px] text-ink-faint shrink-0">
                             {new Date(note.updatedAt).toLocaleDateString('fr-FR')}
                           </span>
                         </div>
-                        <p className="text-xs text-white/60 leading-relaxed">{note.content}</p>
+                        <p className="text-xs text-ink-soft leading-relaxed">{note.content}</p>
                       </div>
                     );
                   })}

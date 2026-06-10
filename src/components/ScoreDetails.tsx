@@ -8,12 +8,12 @@ interface ScoreDetailsProps {
   details: WeatherScoreDetail[];
 }
 
-const impactColors: Record<string, { bg: string; text: string; bar: string }> = {
-  '++': { bg: 'bg-emerald-500/20', text: 'text-emerald-400', bar: 'bg-emerald-400' },
-  '+': { bg: 'bg-green-500/20', text: 'text-green-400', bar: 'bg-green-400' },
-  '~': { bg: 'bg-amber-500/20', text: 'text-amber-400', bar: 'bg-amber-400' },
-  '-': { bg: 'bg-orange-500/20', text: 'text-orange-400', bar: 'bg-orange-400' },
-  '--': { bg: 'bg-red-500/20', text: 'text-red-400', bar: 'bg-red-400' },
+const impactColors: Record<string, { badge: string; bar: string }> = {
+  '++': { badge: 'bg-moss-wash text-moss', bar: 'bg-moss' },
+  '+': { badge: 'bg-moss-wash text-moss', bar: 'bg-moss' },
+  '~': { badge: 'bg-paper-deep text-ink-faint', bar: 'bg-moss' },
+  '-': { badge: 'bg-danger-wash text-danger', bar: 'bg-danger' },
+  '--': { badge: 'bg-danger-wash text-danger', bar: 'bg-danger' },
 };
 
 function barWidth(detail: WeatherScoreDetail): string {
@@ -32,8 +32,8 @@ export default function ScoreDetails({ details }: ScoreDetailsProps) {
 
   return (
     <section className="px-4 mt-4">
-      <h3 className="text-sm font-bold text-white/80 uppercase tracking-widest mb-3 px-1">
-        Facteurs Météo
+      <h3 className="text-[11px] font-semibold text-ink-faint uppercase tracking-[0.18em] mb-3 px-1">
+        Facteurs météo
       </h3>
 
       {/* Grille 2 colonnes de cartes métriques */}
@@ -43,19 +43,19 @@ export default function ScoreDetails({ details }: ScoreDetailsProps) {
           return (
             <div
               key={detail.factor}
-              className="bg-[#2d3828]/40 p-3 rounded-xl border border-white/5"
+              className="bg-paper-raised p-3 rounded-xl border border-line"
             >
               <div className="flex justify-between items-start gap-2 mb-1">
-                <span className="text-xs text-white/50 truncate">{detail.label}</span>
+                <span className="text-xs text-ink-soft truncate">{detail.label}</span>
                 <span
-                  className={`text-[10px] font-bold px-1.5 py-0.5 rounded flex-shrink-0 ${colors.bg} ${colors.text}`}
+                  className={`text-[10px] font-bold px-1.5 py-0.5 rounded flex-shrink-0 ${colors.badge}`}
                 >
                   {detail.impact}
                 </span>
               </div>
-              <div className="text-lg font-bold text-white mb-2">{detail.value}</div>
+              <div className="font-display text-lg font-semibold text-ink mb-2">{detail.value}</div>
               <div
-                className="w-full bg-[#2d3828]/60 h-1.5 rounded-full overflow-hidden"
+                className="w-full bg-paper-deep h-1.5 rounded-full overflow-hidden"
                 role="img"
                 aria-label={`${detail.score} sur ${detail.maxScore} points`}
               >
@@ -73,19 +73,19 @@ export default function ScoreDetails({ details }: ScoreDetailsProps) {
 
         {/* Saisonnalité — carte pleine largeur */}
         {seasonDetail && (
-          <div className="col-span-2 bg-[#2d3828]/40 p-3 rounded-xl border border-white/5 flex items-center justify-between gap-3">
+          <div className="col-span-2 bg-paper-raised p-3 rounded-xl border border-line flex items-center justify-between gap-3">
             <div className="min-w-0">
-              <span className="text-xs text-white/50 block">{seasonDetail.label}</span>
-              <span className="text-lg font-bold text-white">{seasonDetail.value}</span>
+              <span className="text-xs text-ink-soft block">{seasonDetail.label}</span>
+              <span className="font-display text-lg font-semibold text-ink">{seasonDetail.value}</span>
             </div>
             <div className="flex items-center gap-3 flex-shrink-0">
               <span
-                className={`text-[10px] font-bold px-2 py-1 rounded ${seasonColors.bg} ${seasonColors.text}`}
+                className={`text-[10px] font-bold px-2 py-1 rounded ${seasonColors.badge}`}
               >
                 {seasonDetail.impact} Impact
               </span>
               <div
-                className="w-20 bg-[#2d3828]/60 h-1.5 rounded-full overflow-hidden"
+                className="w-20 bg-paper-deep h-1.5 rounded-full overflow-hidden"
                 role="img"
                 aria-label={`${seasonDetail.score} sur ${seasonDetail.maxScore} points`}
               >

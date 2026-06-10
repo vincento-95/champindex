@@ -72,10 +72,11 @@ export default function MapSelector({ onSelectLocation, onBack }: MapSelectorPro
         <div className="flex gap-2">
           <button
             onClick={onBack}
-            className="flex-shrink-0 w-10 h-10 rounded-xl bg-[#1a2215]/90 backdrop-blur-md border border-white/10
-              flex items-center justify-center text-white/80 hover:bg-white/10 transition-all"
+            className="flex-shrink-0 w-11 h-11 rounded-xl bg-paper-raised/95 backdrop-blur-md border border-line
+              flex items-center justify-center text-ink-soft hover:text-ink hover:bg-paper-deep transition-all"
+            aria-label="Retour"
           >
-            ←
+            <span className="material-symbols-outlined text-xl">arrow_back</span>
           </button>
           <div className="flex-1 flex gap-2">
             <input
@@ -83,16 +84,16 @@ export default function MapSelector({ onSelectLocation, onBack }: MapSelectorPro
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-              placeholder="🔍 Rechercher une forêt..."
-              className="flex-1 px-4 py-2.5 rounded-xl bg-[#1a2215]/90 backdrop-blur-md border border-white/10
-                text-white/90 text-sm placeholder-white/30
-                focus:outline-none focus:border-amber-500/50"
+              placeholder="Rechercher une forêt..."
+              className="flex-1 px-4 py-2.5 rounded-xl bg-paper-raised/95 backdrop-blur-md border border-line
+                text-ink text-sm placeholder:text-ink-faint
+                focus:outline-none focus:border-moss"
             />
             <button
               onClick={handleSearch}
               disabled={searching}
-              className="px-4 rounded-xl bg-emerald-700/90 backdrop-blur-md text-white text-sm font-medium
-                hover:bg-emerald-600 transition-all disabled:opacity-50"
+              className="px-4 rounded-xl bg-moss text-paper text-sm font-medium
+                hover:bg-moss-deep transition-all disabled:opacity-50"
             >
               {searching ? '...' : 'OK'}
             </button>
@@ -101,7 +102,7 @@ export default function MapSelector({ onSelectLocation, onBack }: MapSelectorPro
 
         {/* Résultats de recherche */}
         {searchResults.length > 0 && (
-          <div className="mt-2 rounded-xl bg-[#1a2215]/95 backdrop-blur-md border border-white/10 overflow-hidden">
+          <div className="mt-2 rounded-xl bg-paper-raised border border-line shadow-lg overflow-hidden">
             {searchResults.map((result, i) => (
               <button
                 key={i}
@@ -110,9 +111,10 @@ export default function MapSelector({ onSelectLocation, onBack }: MapSelectorPro
                   setSearchResults([]);
                   setSearchQuery(result.name);
                 }}
-                className="w-full px-4 py-3 text-left text-sm text-white/80 hover:bg-white/10 transition-colors border-b border-white/5 last:border-0"
+                className="w-full px-4 py-3 flex items-center gap-2 text-left text-sm text-ink hover:bg-paper-deep transition-colors border-b border-line last:border-0"
               >
-                📍 {result.name}
+                <span className="material-symbols-outlined text-base text-moss">location_on</span>
+                {result.name}
               </button>
             ))}
           </div>
@@ -129,7 +131,7 @@ export default function MapSelector({ onSelectLocation, onBack }: MapSelectorPro
         >
           <TileLayer
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> &copy; <a href="https://carto.com/">CARTO</a>'
-            url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+            url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
             subdomains="abcd"
           />
           <MapClickHandler onClick={handleMapClick} />
@@ -141,30 +143,30 @@ export default function MapSelector({ onSelectLocation, onBack }: MapSelectorPro
 
       {/* Bottom sheet */}
       {selectedPoint && (
-        <div className="absolute bottom-0 left-0 right-0 z-[1000] p-4 bg-gradient-to-t from-[#1a2215] via-[#1a2215]/95 to-transparent pt-12">
-          <div className="rounded-2xl bg-white/5 backdrop-blur-md border border-white/10 p-4">
+        <div className="absolute bottom-0 left-0 right-0 z-[1000] p-4 bg-gradient-to-t from-paper via-paper/95 to-transparent pt-12">
+          <div className="rounded-2xl bg-paper-raised border border-line shadow-lg p-4">
             <div className="flex items-center justify-between mb-3">
               <div>
-                <p className="text-sm text-white/90 font-medium">Point sélectionné</p>
-                <p className="text-xs text-white/40">
+                <p className="text-sm text-ink font-medium">Point sélectionné</p>
+                <p className="text-xs text-ink-faint">
                   {selectedPoint.lat.toFixed(4)}°N, {selectedPoint.lon.toFixed(4)}°E
                 </p>
               </div>
               <button
                 onClick={() => setSelectedPoint(null)}
-                className="text-white/40 hover:text-white/70 text-xl"
+                className="w-11 h-11 -mr-2 flex items-center justify-center rounded-full text-ink-soft hover:text-ink transition-colors"
+                aria-label="Fermer"
               >
-                ✕
+                <span className="material-symbols-outlined text-xl">close</span>
               </button>
             </div>
             <button
               onClick={handleAnalyze}
-              className="w-full py-3 rounded-xl font-semibold text-white
-                bg-gradient-to-r from-emerald-700 to-emerald-600
-                hover:from-emerald-600 hover:to-emerald-500
+              className="w-full py-3 rounded-xl font-medium text-paper bg-moss
+                hover:bg-moss-deep
                 active:scale-[0.98] transition-all duration-200"
             >
-              🍄 Analyser ce spot
+              Analyser ce spot
             </button>
           </div>
         </div>

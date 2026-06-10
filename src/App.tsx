@@ -12,6 +12,7 @@ import Layout from './components/Layout';
 import HabitatExplorer from './components/HabitatExplorer';
 import Notebook from './components/Notebook';
 import BottomNav from './components/BottomNav';
+import { IconMushroom, IconPlant, IconBerry } from './components/Icons';
 
 // Code-split : composants lourds chargés à la demande
 const HeatmapView = lazy(() => import('./components/HeatmapView'));
@@ -20,9 +21,10 @@ const PlantIdentifier = lazy(() => import('./components/PlantIdentifier'));
 
 function OfflineBanner() {
   return (
-    <div className="fixed top-0 left-0 right-0 z-[9999] bg-amber-900/90 backdrop-blur-sm px-4 py-2 text-center">
-      <p className="text-xs text-amber-200 font-medium">
-        📡 Mode hors-ligne — données en cache
+    <div className="fixed top-0 left-0 right-0 z-[9999] bg-paper-deep border-b border-line px-4 py-2 text-center">
+      <p className="text-xs text-ink-soft font-medium flex items-center justify-center gap-1.5">
+        <span className="material-symbols-outlined text-[14px]">wifi_off</span>
+        Mode hors-ligne — données en cache
       </p>
     </div>
   );
@@ -31,8 +33,8 @@ function OfflineBanner() {
 function LazyFallback() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center gap-4">
-      <div className="w-16 h-16 rounded-full border-4 border-white/10 border-t-emerald-400 animate-spin" />
-      <p className="text-sm text-white/40">Chargement...</p>
+      <div className="w-16 h-16 rounded-full border-4 border-line border-t-moss animate-spin" />
+      <p className="text-sm text-ink-soft">Chargement...</p>
     </div>
   );
 }
@@ -95,16 +97,17 @@ export default function App() {
 
   // ---- Loading screen ----
   if ((view === 'results' && scoreLoading) || (view === 'home' && geoLoading && coordinates === null)) {
+    const CategoryIcon = selectedCategory === 'mushroom' ? IconMushroom : selectedCategory === 'plant' ? IconPlant : IconBerry;
     return (
       <div className="min-h-screen flex flex-col items-center justify-center gap-4">
         <div className="relative">
-          <div className="w-20 h-20 rounded-full border-4 border-white/10 border-t-amber-400 animate-spin" />
-          <span className="absolute inset-0 flex items-center justify-center text-3xl">
-            {selectedCategory === 'mushroom' ? '🍄' : selectedCategory === 'plant' ? '🌿' : '🫐'}
+          <div className="w-20 h-20 rounded-full border-4 border-line border-t-moss animate-spin" />
+          <span className="absolute inset-0 flex items-center justify-center">
+            <CategoryIcon size={30} className="text-moss" />
           </span>
         </div>
-        <p className="text-sm text-white/50 animate-pulse">Analyse en cours...</p>
-        <p className="text-xs text-white/30">Météo · Terrain · Espèces</p>
+        <p className="text-sm text-ink-soft animate-pulse">Analyse en cours...</p>
+        <p className="text-[10px] uppercase tracking-[0.18em] text-ink-faint">Météo · Terrain · Espèces</p>
       </div>
     );
   }
@@ -113,13 +116,14 @@ export default function App() {
   if (view === 'results' && scoreError && !currentScore) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center gap-4 px-8">
-        <span className="text-5xl">😕</span>
-        <p className="text-sm text-red-300 text-center">{scoreError}</p>
+        <span className="material-symbols-outlined text-5xl text-ink-faint">error</span>
+        <p className="text-sm text-danger text-center">{scoreError}</p>
         <button
           onClick={handleBack}
-          className="mt-4 px-6 py-2 rounded-xl bg-white/10 text-white/80 text-sm hover:bg-white/20 transition-colors"
+          className="mt-4 px-6 py-2.5 rounded-xl bg-paper-raised border border-line-strong text-ink text-sm font-medium hover:bg-paper-deep transition-colors flex items-center gap-1.5"
         >
-          ← Retour
+          <span className="material-symbols-outlined text-[18px]">arrow_back</span>
+          Retour
         </button>
       </div>
     );

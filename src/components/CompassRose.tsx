@@ -32,8 +32,8 @@ export default function CompassRose({ aspect, aspectLabel }: CompassRoseProps) {
     <div className="flex flex-col items-center">
       <svg width="120" height="120" viewBox="0 0 120 120">
         {/* Cercle de fond */}
-        <circle cx={center} cy={center} r={radius + 5} fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="1" />
-        <circle cx={center} cy={center} r={innerRadius} fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.1)" strokeWidth="1" />
+        <circle cx={center} cy={center} r={radius + 5} fill="none" stroke="var(--color-line-strong)" strokeWidth="1" />
+        <circle cx={center} cy={center} r={innerRadius} fill="var(--color-paper-deep)" stroke="var(--color-line-strong)" strokeWidth="1" />
 
         {/* Lignes des directions */}
         {directions.map((dir) => {
@@ -50,14 +50,15 @@ export default function CompassRose({ aspect, aspectLabel }: CompassRoseProps) {
             <g key={dir.label}>
               <line
                 x1={x1} y1={y1} x2={x2} y2={y2}
-                stroke={highlighted ? '#d4a855' : 'rgba(255,255,255,0.15)'}
+                stroke={highlighted ? 'var(--color-moss)' : 'var(--color-ink-soft)'}
+                strokeOpacity={highlighted ? 1 : 0.45}
                 strokeWidth={highlighted ? 2.5 : 1}
               />
               <text
                 x={labelX} y={labelY}
                 textAnchor="middle"
                 dominantBaseline="central"
-                className={highlighted ? 'fill-amber-400' : 'fill-white/30'}
+                className={highlighted ? 'fill-moss' : 'fill-ink-faint'}
                 style={{ fontSize: highlighted ? '11px' : '9px', fontWeight: highlighted ? 700 : 400 }}
               >
                 {dir.label}
@@ -74,16 +75,15 @@ export default function CompassRose({ aspect, aspectLabel }: CompassRoseProps) {
           return (
             <circle
               cx={tipX} cy={tipY} r={4}
-              fill="#d4a855"
-              style={{ filter: 'drop-shadow(0 0 4px #d4a855)' }}
+              fill="var(--color-moss)"
             />
           );
         })()}
 
         {/* Point central */}
-        <circle cx={center} cy={center} r={3} fill="#d4a855" />
+        <circle cx={center} cy={center} r={3} fill="var(--color-ink-soft)" />
       </svg>
-      <p className="text-xs text-white/50 mt-1">Exposition : <span className="text-amber-400 font-semibold">{aspectLabel}</span></p>
+      <p className="text-xs text-ink-soft mt-1">Exposition : <span className="font-display text-moss font-semibold">{aspectLabel}</span></p>
     </div>
   );
 }

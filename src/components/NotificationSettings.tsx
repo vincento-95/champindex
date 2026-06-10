@@ -8,6 +8,7 @@ import {
   requestNotificationPermission,
   getNotificationPermission,
 } from '../lib/notifications';
+import { IconAlert } from './Icons';
 
 export default function NotificationSettings() {
   const [permission, setPermission] = useState<NotificationPermission | 'unsupported'>(
@@ -25,18 +26,21 @@ export default function NotificationSettings() {
 
   if (!isNotificationSupported()) {
     return (
-      <div className="px-4 py-3 rounded-xl bg-white/5 border border-white/5">
-        <p className="text-xs text-white/40">Les notifications ne sont pas supportées par ce navigateur.</p>
+      <div className="px-4 py-3 rounded-xl bg-paper-raised border border-line">
+        <p className="text-xs text-ink-soft">Les notifications ne sont pas supportées par ce navigateur.</p>
       </div>
     );
   }
 
   return (
-    <div className="px-4 py-3 rounded-xl bg-white/5 border border-white/5">
+    <div className="px-4 py-3 rounded-xl bg-paper-raised border border-line">
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-sm font-medium text-white/90">🔔 Notifications</p>
-          <p className="text-[11px] text-white/40 mt-0.5">
+          <p className="text-sm font-medium text-ink flex items-center gap-1.5">
+            <IconAlert size={15} className="text-moss" />
+            Notifications
+          </p>
+          <p className="text-[11px] text-ink-soft mt-0.5">
             {permission === 'granted'
               ? 'Activées — vous serez alerté quand les conditions sont idéales'
               : permission === 'denied'
@@ -47,17 +51,17 @@ export default function NotificationSettings() {
         {permission === 'default' && (
           <button
             onClick={handleEnable}
-            className="px-3 py-1.5 rounded-lg text-xs font-medium text-emerald-300
-              bg-emerald-700/30 hover:bg-emerald-700/50 transition-colors flex-shrink-0"
+            className="px-3 py-1.5 rounded-lg text-xs font-medium text-paper
+              bg-moss hover:bg-moss-deep transition-colors flex-shrink-0"
           >
             Activer
           </button>
         )}
         {permission === 'granted' && (
-          <span className="text-emerald-400 text-sm">✓</span>
+          <span className="material-symbols-outlined text-[18px] text-moss">check</span>
         )}
         {permission === 'denied' && (
-          <span className="text-red-400 text-sm">✕</span>
+          <span className="material-symbols-outlined text-[18px] text-danger">close</span>
         )}
       </div>
     </div>

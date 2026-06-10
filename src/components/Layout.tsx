@@ -3,6 +3,7 @@
 // ============================================================
 
 import { useMemo, useEffect } from 'react';
+import type { ReactNode } from 'react';
 import type { ResultTab, MushroomScore, ForecastDay, ForagingCategory } from '../types';
 import { FORAGING_SPECIES, getForagingByMonth } from '../lib/foraging-db';
 import { matchAlerts } from '../lib/alert-engine';
@@ -14,6 +15,7 @@ import ForecastStrip from './ForecastStrip';
 import TerrainAnalysis from './TerrainAnalysis';
 import SpeciesList from './SpeciesList';
 import { AlertBanner } from './AlertBanner';
+import { IconMushroom, IconPlant, IconBerry, IconLocationLeaf } from './Icons';
 import type { HeatmapStats } from '../lib/heatmap-api';
 
 interface LayoutProps {
@@ -25,10 +27,10 @@ interface LayoutProps {
   selectedCategory: ForagingCategory;
 }
 
-const CATEGORY_ICONS: Record<ForagingCategory, string> = {
-  mushroom: '🍄',
-  plant: '🌿',
-  berry: '🫐',
+const CATEGORY_ICONS: Record<ForagingCategory, ReactNode> = {
+  mushroom: <IconMushroom size={18} />,
+  plant: <IconPlant size={18} />,
+  berry: <IconBerry size={18} />,
 };
 
 export default function Layout({
@@ -39,10 +41,22 @@ export default function Layout({
   onChangeSpot,
   selectedCategory,
 }: LayoutProps) {
-  const tabs: { id: ResultTab; label: string; icon: string }[] = [
-    { id: 'score', label: 'Score', icon: '🎯' },
-    { id: 'forecast', label: '7 jours', icon: '📅' },
-    { id: 'terrain', label: 'Terrain', icon: '⛰️' },
+  const tabs: { id: ResultTab; label: string; icon: ReactNode }[] = [
+    {
+      id: 'score',
+      label: 'Score',
+      icon: <span className="material-symbols-outlined !text-[18px] leading-none" aria-hidden="true">target</span>,
+    },
+    {
+      id: 'forecast',
+      label: '7 jours',
+      icon: <span className="material-symbols-outlined !text-[18px] leading-none" aria-hidden="true">calendar_month</span>,
+    },
+    {
+      id: 'terrain',
+      label: 'Terrain',
+      icon: <span className="material-symbols-outlined !text-[18px] leading-none" aria-hidden="true">landscape</span>,
+    },
     { id: 'species', label: 'Espèces', icon: CATEGORY_ICONS[selectedCategory] },
   ];
 
@@ -93,22 +107,22 @@ export default function Layout({
   return (
     <div className="min-h-screen flex flex-col">
       {/* Top bar */}
-      <header className="px-4 py-3 flex items-center justify-between border-b border-white/5">
+      <header className="px-4 py-3 flex items-center justify-between border-b border-line">
         <div className="flex items-center gap-2 min-w-0">
-          <span className="text-lg">📍</span>
-          <span className="text-sm font-medium text-white/90 truncate">{score.location}</span>
+          <IconLocationLeaf size={18} className="flex-shrink-0 text-moss" />
+          <span className="font-display text-base font-medium text-ink truncate">{score.location}</span>
         </div>
         <button
           onClick={onChangeSpot}
-          className="flex-shrink-0 px-3 py-1.5 rounded-lg text-xs font-medium text-amber-400
-            bg-amber-400/10 hover:bg-amber-400/20 transition-colors"
+          className="flex-shrink-0 px-3 py-1.5 rounded-lg text-xs font-medium text-ink
+            bg-paper-raised border border-line-strong hover:bg-paper-deep transition-colors"
         >
           Changer
         </button>
       </header>
 
       {/* Tab bar */}
-      <nav className="flex border-b border-white/5" role="tablist" aria-label="Résultats">
+      <nav className="flex border-b border-line" role="tablist" aria-label="Résultats">
         {tabs.map((tab) => (
           <button
             key={tab.id}
@@ -118,14 +132,14 @@ export default function Layout({
             onClick={() => onChangeTab(tab.id)}
             className={`flex-1 py-3 text-center transition-all duration-200 relative
               ${activeTab === tab.id
-                ? 'text-amber-400'
-                : 'text-white/40 hover:text-white/60'
+                ? 'text-moss'
+                : 'text-ink-faint hover:text-ink-soft'
               }`}
           >
-            <span className="text-sm">{tab.icon}</span>
+            <span className="flex justify-center" aria-hidden="true">{tab.icon}</span>
             <span className="block text-xs mt-0.5 font-medium">{tab.label}</span>
             {activeTab === tab.id && (
-              <div className="absolute bottom-0 left-1/4 right-1/4 h-0.5 bg-amber-400 rounded-full" />
+              <div className="absolute bottom-0 left-1/4 right-1/4 h-0.5 bg-moss rounded-full" />
             )}
           </button>
         ))}
@@ -141,7 +155,7 @@ export default function Layout({
             {alertStats && (
               <section className="mt-6">
                 {hasAlerts && (
-                  <h3 className="px-5 text-sm font-bold text-white/80 uppercase tracking-widest mb-1">
+                  <h3 className="px-5 text-[11px] font-semibold text-ink-faint uppercase tracking-[0.18em] mb-1">
                     Alertes Espèces
                   </h3>
                 )}
@@ -174,8 +188,8 @@ export default function Layout({
         )}
 
         {activeTab === 'terrain' && !score.terrain && (
-          <div className="flex flex-col items-center justify-center py-16 text-white/40">
-            <p className="text-4xl mb-3">⛰️</p>
+          <div className="flex flex-col items-center justify-center py-16 text-ink-faint">
+            <span className="material-symbols-outlined !text-4xl mb-3" aria-hidden="true">landscape</span>
             <p className="text-sm">Données terrain indisponibles pour ce spot</p>
           </div>
         )}
@@ -186,7 +200,7 @@ export default function Layout({
       </main>
 
       {/* Footer source */}
-      <footer className="px-4 py-2 text-center text-xs text-white/20 border-t border-white/5">
+      <footer className="px-4 py-2 text-center text-[10px] text-ink-faint border-t border-line">
         Données : Open-Meteo · Open-Elevation · OpenStreetMap · {score.date}
       </footer>
     </div>

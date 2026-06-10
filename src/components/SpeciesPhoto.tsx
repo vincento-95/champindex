@@ -41,7 +41,7 @@ export default memo(function SpeciesPhoto({ speciesId, emoji, nom, size = 'sm' }
     <>
       <button
         onClick={(e) => { e.stopPropagation(); setZoomed(true); }}
-        className={`${sizeClasses[size]} flex-shrink-0 rounded-xl overflow-hidden bg-white/5`}
+        className={`${sizeClasses[size]} flex-shrink-0 rounded-xl overflow-hidden bg-paper-deep`}
       >
         <img
           src={url}

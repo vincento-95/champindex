@@ -25,8 +25,8 @@ const NAV_ITEMS: {
 export default function BottomNav({ activeView, onNavigate }: BottomNavProps) {
   return (
     <nav
-      className="fixed bottom-0 left-0 right-0 z-[999] bg-[#1a2215]/95 backdrop-blur-xl
-        border-t border-white/10 safe-area-bottom"
+      className="fixed bottom-0 left-0 right-0 z-[999] bg-paper-raised
+        border-t border-line safe-area-bottom"
       role="tablist"
       aria-label="Navigation principale"
     >
@@ -41,7 +41,7 @@ export default function BottomNav({ activeView, onNavigate }: BottomNavProps) {
               onClick={() => onNavigate(item.view)}
               className={`flex-1 flex flex-col items-center gap-0.5 py-2.5 relative
                 transition-all duration-200 active:scale-90 ${
-                isActive ? 'text-amber-400' : 'text-white/40 hover:text-white/60'
+                isActive ? 'text-moss' : 'text-ink-faint hover:text-ink-soft'
               }`}
             >
               {item.SvgIcon ? (
@@ -58,7 +58,7 @@ export default function BottomNav({ activeView, onNavigate }: BottomNavProps) {
               )}
               <span className="text-[10px] font-semibold tracking-wide">{item.label}</span>
               {isActive && (
-                <div className="absolute -top-px left-1/2 -translate-x-1/2 w-8 h-0.5 bg-amber-400 rounded-full" />
+                <div className="absolute -top-px left-1/2 -translate-x-1/2 w-8 h-0.5 bg-moss rounded-full" />
               )}
             </button>
           );

@@ -12,7 +12,7 @@ interface ForecastStripProps {
 export default function ForecastStrip({ days }: ForecastStripProps) {
   if (days.length === 0) {
     return (
-      <div className="px-4 py-8 text-center text-white/40">
+      <div className="px-4 py-8 text-center text-ink-faint">
         Chargement des prévisions...
       </div>
     );
@@ -32,21 +32,20 @@ export default function ForecastStrip({ days }: ForecastStripProps) {
               key={day.date}
               className={`flex-shrink-0 w-[88px] p-3 rounded-2xl text-center transition-all
                 ${day.isToday
-                  ? 'bg-white/10 border-2 backdrop-blur-md'
-                  : 'bg-white/5 border border-white/5 backdrop-blur-sm'
+                  ? 'bg-moss-wash border-2 border-moss'
+                  : 'bg-paper-raised border border-line'
                 }`}
-              style={day.isToday ? { borderColor: levelInfo.color } : undefined}
             >
-              <p className={`text-xs font-semibold ${day.isToday ? 'text-amber-400' : 'text-white/50'}`}>
+              <p className={`text-xs font-semibold ${day.isToday ? 'text-moss' : 'text-ink-faint'}`}>
                 {day.isToday ? "Auj." : day.dayName}
               </p>
-              <p className="text-lg font-bold text-white/90">{day.dayNumber}</p>
+              <p className="font-display text-lg font-semibold text-ink">{day.dayNumber}</p>
 
               {/* Badge score */}
               <div
-                className="w-11 h-11 mx-auto my-2 rounded-full flex items-center justify-center text-sm font-bold text-white"
+                className="w-11 h-11 mx-auto my-2 rounded-full flex items-center justify-center text-sm font-bold bg-paper-raised"
                 style={{
-                  backgroundColor: `${levelInfo.color}30`,
+                  color: levelInfo.color,
                   border: `2px solid ${levelInfo.color}`,
                 }}
               >
@@ -54,12 +53,15 @@ export default function ForecastStrip({ days }: ForecastStripProps) {
               </div>
 
               {/* Temp + pluie */}
-              <p className="text-xs text-white/60">
+              <p className="text-xs text-ink-soft">
                 {Math.round(day.tempMin)}° / {Math.round(day.tempMax)}°
               </p>
               {day.precipitation > 0 && (
-                <p className="text-xs text-blue-300 mt-0.5">
-                  💧 {day.precipitation.toFixed(1)}mm
+                <p className="text-xs text-moss mt-0.5 flex items-center justify-center gap-0.5">
+                  <span className="material-symbols-outlined !text-[12px] leading-none" aria-hidden="true">
+                    water_drop
+                  </span>
+                  {day.precipitation.toFixed(1)}mm
                 </p>
               )}
             </div>
@@ -68,21 +70,19 @@ export default function ForecastStrip({ days }: ForecastStripProps) {
       </div>
 
       {/* Mini graphique précipitations */}
-      <div className="mt-4 p-4 rounded-2xl bg-white/5 border border-white/5">
-        <p className="text-xs text-white/40 uppercase tracking-wider mb-3">Précipitations</p>
+      <div className="mt-4 p-4 rounded-2xl bg-paper-raised border border-line">
+        <p className="text-[11px] text-ink-faint uppercase tracking-[0.18em] font-semibold mb-3">Précipitations</p>
         <div className="flex items-end gap-1 h-16">
           {days.map((day) => {
             const height = Math.max(2, (day.precipitation / maxPrecip) * 100);
             return (
               <div key={day.date} className="flex-1 flex flex-col items-center gap-1">
                 <div
-                  className="w-full rounded-t transition-all duration-500"
-                  style={{
-                    height: `${height}%`,
-                    backgroundColor: day.precipitation > 5 ? '#60a5fa' : day.precipitation > 0 ? '#60a5fa60' : '#ffffff10',
-                  }}
+                  className={`w-full rounded-t transition-all duration-500
+                    ${day.precipitation > 5 ? 'bg-moss' : day.precipitation > 0 ? 'bg-moss/50' : 'bg-paper-deep'}`}
+                  style={{ height: `${height}%` }}
                 />
-                <span className="text-[10px] text-white/30">{day.dayName.charAt(0)}</span>
+                <span className="text-[10px] text-ink-faint">{day.dayName.charAt(0)}</span>
               </div>
             );
           })}
@@ -90,10 +90,12 @@ export default function ForecastStrip({ days }: ForecastStripProps) {
       </div>
 
       {/* Conseil prévision */}
-      <div className="mt-3 p-3 rounded-xl bg-white/5 border border-white/5">
-        <p className="text-xs text-white/60 leading-relaxed">
-          <span className="text-amber-400">💡</span>{' '}
-          {getBestDayAdvice(days)}
+      <div className="mt-3 p-3 rounded-xl bg-moss-wash">
+        <p className="text-xs text-ink leading-relaxed flex gap-2">
+          <span className="material-symbols-outlined !text-sm text-moss flex-shrink-0 leading-none mt-0.5" aria-hidden="true">
+            lightbulb
+          </span>
+          <span>{getBestDayAdvice(days)}</span>
         </p>
       </div>
     </div>

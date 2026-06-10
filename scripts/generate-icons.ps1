@@ -15,10 +15,11 @@ function New-Icon {
     $g = [System.Drawing.Graphics]::FromImage($bmp)
     $g.SmoothingMode = [System.Drawing.Drawing2D.SmoothingMode]::AntiAlias
 
-    $bg     = New-Object System.Drawing.SolidBrush ([System.Drawing.Color]::FromArgb(255, 26, 34, 21))   # #1a2215
-    $cap    = New-Object System.Drawing.SolidBrush ([System.Drawing.Color]::FromArgb(255, 224, 88, 47))  # #e0582f
-    $spots  = New-Object System.Drawing.SolidBrush ([System.Drawing.Color]::FromArgb(255, 253, 243, 227)) # #fdf3e3
-    $stem   = New-Object System.Drawing.SolidBrush ([System.Drawing.Color]::FromArgb(255, 243, 233, 210)) # #f3e9d2
+    # DA « Guide naturaliste » : papier, terre cuite, mousse
+    $bg     = New-Object System.Drawing.SolidBrush ([System.Drawing.Color]::FromArgb(255, 245, 241, 230)) # #f5f1e6 papier
+    $cap    = New-Object System.Drawing.SolidBrush ([System.Drawing.Color]::FromArgb(255, 180, 80, 46))   # #b4502e terre cuite
+    $spots  = New-Object System.Drawing.SolidBrush ([System.Drawing.Color]::FromArgb(255, 245, 241, 230)) # #f5f1e6 papier
+    $stem   = New-Object System.Drawing.SolidBrush ([System.Drawing.Color]::FromArgb(255, 90, 107, 63))   # #5a6b3f mousse
 
     # Fond plein (full-bleed : iOS et maskable arrondissent eux-mêmes)
     $g.FillRectangle($bg, 0, 0, $Size, $Size)

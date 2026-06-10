@@ -14,12 +14,25 @@ interface ScoreGaugeProps {
 const RADIUS = 45;
 const CIRCUMFERENCE = 2 * Math.PI * RADIUS; // ≈ 282.74
 
+// Pill de niveau : mapping des couleurs lib → tokens papier
+// (exceptionnel → terre cuite, favorable → mousse, moyen → neutre, défavorable → danger)
+const PILL_BY_COLOR: Record<string, string> = {
+  '#2d6a4f': 'bg-terra-wash text-terra',
+  '#40916c': 'bg-moss-wash text-moss',
+  '#6a994e': 'bg-moss-wash text-moss',
+  '#bc6c25': 'bg-paper-deep text-ink-soft',
+  '#ae2012': 'bg-danger-wash text-danger',
+  '#9b2226': 'bg-danger-wash text-danger',
+};
+
 export default function ScoreGauge({ score, levelInfo, terrainBonus }: ScoreGaugeProps) {
   // Accessibilité : annonce du score
   const ariaLabel = `Score de ${score} sur 100. Niveau : ${levelInfo.label}`;
 
   const clamped = Math.max(0, Math.min(100, score));
   const dashOffset = CIRCUMFERENCE * (1 - clamped / 100);
+
+  const pillClass = PILL_BY_COLOR[levelInfo.color] ?? 'bg-moss-wash text-moss';
 
   return (
     <div className="flex flex-col items-center justify-center pt-6 pb-2" role="status" aria-label={ariaLabel}>
@@ -32,8 +45,7 @@ export default function ScoreGauge({ score, levelInfo, terrainBonus }: ScoreGaug
             cy="50"
             r={RADIUS}
             fill="transparent"
-            stroke="#2d3828"
-            strokeOpacity="0.6"
+            stroke="#ddd6c2"
             strokeWidth="8"
           />
           {/* Cercle de progression */}
@@ -50,31 +62,23 @@ export default function ScoreGauge({ score, levelInfo, terrainBonus }: ScoreGaug
               strokeDashoffset={dashOffset}
               style={{
                 transition: 'stroke-dashoffset 1s ease-out',
-                filter: `drop-shadow(0 0 6px ${levelInfo.color}66)`,
               }}
             />
           )}
         </svg>
         {/* Score au centre */}
         <div className="absolute flex flex-col items-center justify-center">
-          <span className="text-4xl font-bold text-white">
+          <span className="font-display text-4xl font-semibold text-ink">
             {score}
-            <span className="text-xl font-normal text-white/50">/100</span>
+            <span className="text-xl font-normal text-ink-faint">/100</span>
           </span>
         </div>
       </div>
 
-      {/* Pill niveau (inspiré maquette Stitch) */}
-      <div
-        className="mt-4 flex items-center gap-2 px-4 py-1.5 rounded-full border"
-        style={{
-          color: levelInfo.color,
-          backgroundColor: `${levelInfo.color}20`,
-          borderColor: `${levelInfo.color}4D`,
-        }}
-      >
-        <span className="text-sm font-bold">
-          {levelInfo.label} {levelInfo.emoji}
+      {/* Pill niveau */}
+      <div className={`mt-4 flex items-center gap-2 px-4 py-1.5 rounded-full ${pillClass}`}>
+        <span className="text-sm font-semibold">
+          {levelInfo.label}
         </span>
       </div>
 
@@ -82,7 +86,7 @@ export default function ScoreGauge({ score, levelInfo, terrainBonus }: ScoreGaug
       {terrainBonus !== undefined && terrainBonus !== 0 && (
         <div
           className={`mt-2 flex items-center gap-1 text-sm font-medium ${
-            terrainBonus > 0 ? 'text-emerald-400' : 'text-red-400'
+            terrainBonus > 0 ? 'text-moss' : 'text-danger'
           }`}
         >
           <span className="material-symbols-outlined !text-base leading-none" aria-hidden="true">

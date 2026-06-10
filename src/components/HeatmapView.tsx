@@ -9,6 +9,7 @@ import { useHeatmapData } from '../hooks/useHeatmapData';
 import type { HeatmapPointData } from '../lib/heatmap-api';
 import { FORAGING_LOCATIONS, type ForagingLocation } from '../lib/locations-db';
 import type { ForagingCategory } from '../types';
+import { IconMushroom, IconPlant, IconBerry, IconAlert } from './Icons';
 
 // --- Constantes ---
 
@@ -101,8 +102,8 @@ function Legend({ category }: { category: ForagingCategory }) {
   };
 
   return (
-    <div className="absolute bottom-6 left-3 z-[1000] bg-black/70 backdrop-blur-md rounded-xl px-3 py-2.5 text-xs">
-      <p className="font-semibold text-white/90 mb-1.5">{labels[category]}</p>
+    <div className="absolute bottom-6 left-3 z-[1000] bg-paper-raised/95 backdrop-blur-md border border-line rounded-xl px-3 py-2.5 text-xs shadow-lg">
+      <p className="font-semibold text-ink mb-1.5">{labels[category]}</p>
       {[
         { color: '#ef4444', label: 'Très probable' },
         { color: '#f59e0b', label: 'Moyen' },
@@ -110,7 +111,7 @@ function Legend({ category }: { category: ForagingCategory }) {
       ].map(l => (
         <div key={l.label} className="flex items-center gap-2 py-0.5">
           <span className="w-3 h-3 rounded-full inline-block" style={{ backgroundColor: l.color }} />
-          <span className="text-white/70">{l.label}</span>
+          <span className="text-ink-soft">{l.label}</span>
         </div>
       ))}
     </div>
@@ -232,37 +233,41 @@ function LocationSheet({
   onClose: () => void;
 }) {
   const speciesContent = category === 'mushroom' ? location.mainMushrooms : category === 'plant' ? location.mainPlants : location.mainBerries;
-  const speciesLabel = category === 'mushroom' ? '🍄 Champignons' : category === 'plant' ? '🌿 Plantes' : '🫐 Baies & fruits';
+  const speciesLabel = category === 'mushroom' ? 'Champignons' : category === 'plant' ? 'Plantes' : 'Baies & fruits';
+  const SpeciesIcon = category === 'mushroom' ? IconMushroom : category === 'plant' ? IconPlant : IconBerry;
   const conditions = nearestPoint ? getPointColor(nearestPoint.score) : null;
   const soil = nearestPoint ? Math.round(nearestPoint.stats.soilBalance) : 0;
 
   return (
-    <div className="absolute bottom-0 left-0 right-0 z-[1000] bg-[#151c10]/95 backdrop-blur-xl border-t border-white/10 rounded-t-3xl shadow-[0_-10px_40px_rgba(0,0,0,0.5)] px-6 pt-2 pb-8 animate-slide-up max-h-[60vh] overflow-y-auto">
-      <div className="w-12 h-1 bg-white/15 rounded-full mx-auto mb-5" />
+    <div className="absolute bottom-0 left-0 right-0 z-[1000] bg-paper-raised border-t border-line rounded-t-3xl shadow-[0_-10px_40px_rgba(42,42,36,0.18)] px-6 pt-2 pb-8 animate-slide-up max-h-[60vh] overflow-y-auto">
+      <div className="w-12 h-1 bg-line-strong rounded-full mx-auto mb-5" />
 
       {/* En-tête : nom + badge score */}
       <div className="flex items-start justify-between gap-3 mb-5">
         <div className="flex-1 min-w-0">
-          <h3 className="text-2xl font-bold text-white leading-tight">{location.name}</h3>
+          <h3 className="font-display text-2xl font-bold text-ink leading-tight">{location.name}</h3>
           <div className="flex flex-wrap items-center gap-2 mt-1.5">
-            <span className="bg-white/10 text-white/50 text-[10px] px-2 py-0.5 rounded font-bold uppercase tracking-wide">
+            <span className="bg-paper-deep text-ink-faint text-[10px] px-2 py-0.5 rounded font-bold uppercase tracking-[0.18em]">
               {location.department}
             </span>
-            <span className="text-white/40 text-xs italic">{location.habitatType}</span>
+            <span className="text-ink-soft text-xs italic">{location.habitatType}</span>
           </div>
           {location.areaHectares && (
-            <p className="text-[11px] text-emerald-400/70 mt-1.5">📐 {location.areaHectares.toLocaleString('fr-FR')} ha</p>
+            <p className="flex items-center gap-1 text-[11px] text-ink-soft mt-1.5">
+              <span className="material-symbols-outlined text-sm text-moss leading-none">square_foot</span>
+              {location.areaHectares.toLocaleString('fr-FR')} ha
+            </p>
           )}
         </div>
         <div className="flex items-start gap-2 shrink-0">
           {nearestPoint && (
-            <div className="bg-orange-500/10 border border-orange-500/50 rounded-2xl w-14 h-14 flex items-center justify-center">
-              <span className="text-2xl font-black text-orange-500">{nearestPoint.score}</span>
+            <div className="bg-terra-wash border border-terra/40 rounded-2xl w-14 h-14 flex items-center justify-center">
+              <span className="font-display text-2xl font-bold text-terra">{nearestPoint.score}</span>
             </div>
           )}
           <button
             onClick={onClose}
-            className="w-11 h-11 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/40 hover:text-white/80 hover:bg-white/10 transition-colors"
+            className="w-11 h-11 rounded-full bg-paper-deep flex items-center justify-center text-ink-soft hover:text-ink transition-colors"
             aria-label="Fermer">
             <span className="material-symbols-outlined text-xl">close</span>
           </button>
@@ -273,25 +278,25 @@ function LocationSheet({
       {nearestPoint && (
         <>
           <div className="grid grid-cols-3 gap-3 mb-4">
-            <div className="bg-white/5 border border-white/5 p-3 rounded-2xl text-center">
-              <div className="text-[10px] text-white/40 uppercase font-bold tracking-wider mb-1">Pluie</div>
-              <div className="text-lg font-bold text-white">
+            <div className="bg-paper-deep p-3 rounded-2xl text-center">
+              <div className="text-[10px] text-ink-faint uppercase tracking-[0.18em] mb-1">Pluie</div>
+              <div className="font-display text-lg font-bold text-ink">
                 {Math.round(nearestPoint.stats.rain14d)}
-                <span className="text-xs font-semibold text-white/50">mm</span>
+                <span className="text-xs font-semibold text-ink-faint">mm</span>
               </div>
             </div>
-            <div className="bg-white/5 border border-white/5 p-3 rounded-2xl text-center">
-              <div className="text-[10px] text-white/40 uppercase font-bold tracking-wider mb-1">Temp</div>
-              <div className="text-lg font-bold text-white">
+            <div className="bg-paper-deep p-3 rounded-2xl text-center">
+              <div className="text-[10px] text-ink-faint uppercase tracking-[0.18em] mb-1">Temp</div>
+              <div className="font-display text-lg font-bold text-ink">
                 {Math.round(nearestPoint.stats.tempMean7d)}
-                <span className="text-xs font-semibold text-white/50">°C</span>
+                <span className="text-xs font-semibold text-ink-faint">°C</span>
               </div>
             </div>
-            <div className="bg-white/5 border border-white/5 p-3 rounded-2xl text-center">
-              <div className="text-[10px] text-white/40 uppercase font-bold tracking-wider mb-1">Sol</div>
-              <div className={`text-lg font-bold ${soil >= 0 ? 'text-blue-400' : 'text-amber-400'}`}>
+            <div className="bg-paper-deep p-3 rounded-2xl text-center">
+              <div className="text-[10px] text-ink-faint uppercase tracking-[0.18em] mb-1">Sol</div>
+              <div className="font-display text-lg font-bold text-ink">
                 {soil >= 0 ? `+${soil}` : soil}
-                <span className="text-xs font-semibold text-white/50">mm</span>
+                <span className="text-xs font-semibold text-ink-faint">mm</span>
               </div>
             </div>
           </div>
@@ -299,9 +304,9 @@ function LocationSheet({
             <div className="flex items-center gap-2 mb-5">
               <span
                 className="w-2 h-2 rounded-full shrink-0"
-                style={{ backgroundColor: conditions.color, boxShadow: `0 0 8px ${conditions.color}` }}
+                style={{ backgroundColor: conditions.color }}
               />
-              <span className="text-[10px] text-white/50 font-medium uppercase tracking-wide">
+              <span className="text-[10px] text-ink-soft font-medium uppercase tracking-[0.18em]">
                 Conditions météo : {conditions.label}
               </span>
             </div>
@@ -311,25 +316,28 @@ function LocationSheet({
 
       {/* Espèces */}
       {speciesContent && (
-        <div className="bg-white/5 border border-white/5 rounded-2xl p-4 mb-3">
-          <p className="text-[10px] text-white/40 uppercase tracking-wider font-bold mb-1.5">{speciesLabel}</p>
-          <p className="text-sm text-white/80 leading-relaxed">{speciesContent}</p>
+        <div className="bg-paper-deep rounded-2xl p-4 mb-3">
+          <p className="flex items-center gap-1.5 text-[10px] text-ink-faint uppercase tracking-[0.18em] mb-1.5">
+            <SpeciesIcon size={14} className="text-moss" />
+            {speciesLabel}
+          </p>
+          <p className="text-sm text-ink-soft leading-relaxed">{speciesContent}</p>
         </div>
       )}
 
       {/* Meilleure période */}
       {location.bestPeriod && (
         <div className="flex items-center gap-2 mb-2">
-          <span className="material-symbols-outlined text-base text-amber-400">calendar_month</span>
-          <p className="text-xs text-amber-300/90 font-medium">{location.bestPeriod}</p>
+          <span className="material-symbols-outlined text-base text-moss">calendar_month</span>
+          <p className="text-xs text-ink-soft font-medium">{location.bestPeriod}</p>
         </div>
       )}
 
       {/* Notes */}
       {location.notes && (
         <div className="flex items-start gap-2">
-          <span className="material-symbols-outlined text-base text-white/30 mt-0.5">sticky_note_2</span>
-          <p className="text-xs text-white/50 leading-relaxed">{location.notes}</p>
+          <span className="material-symbols-outlined text-base text-moss mt-0.5">sticky_note_2</span>
+          <p className="text-xs text-ink-soft leading-relaxed">{location.notes}</p>
         </div>
       )}
     </div>
@@ -373,23 +381,25 @@ export default function HeatmapView({ onBack, selectedCategory }: HeatmapViewPro
     return (
       <div className="heatmap-view min-h-screen flex flex-col items-center justify-center gap-4">
         <div className="relative">
-          <div className="w-20 h-20 rounded-full border-4 border-white/10 border-t-emerald-400 animate-spin" />
-          <span className="absolute inset-0 flex items-center justify-center text-3xl">🌡️</span>
+          <div className="w-20 h-20 rounded-full border-4 border-line border-t-moss animate-spin" />
+          <span className="absolute inset-0 flex items-center justify-center">
+            <IconMushroom size={28} className="text-moss" />
+          </span>
         </div>
-        <p className="text-sm text-white/50 animate-pulse">Chargement de la carte...</p>
+        <p className="text-sm text-ink-soft animate-pulse">Chargement de la carte...</p>
         {progress ? (
           <div className="w-48 mt-2">
-            <div className="flex justify-between text-[10px] text-white/40 mb-1">
+            <div className="flex justify-between text-[10px] text-ink-faint mb-1">
               <span>{progress.loaded.toLocaleString()} / {progress.total.toLocaleString()} zones</span>
               <span>{Math.round(progress.loaded / progress.total * 100)}%</span>
             </div>
-            <div className="w-full h-1.5 bg-white/10 rounded-full overflow-hidden">
-              <div className="h-full bg-emerald-400 rounded-full transition-all duration-300"
+            <div className="w-full h-1.5 bg-paper-deep rounded-full overflow-hidden">
+              <div className="h-full bg-moss rounded-full transition-all duration-300"
                 style={{ width: `${(progress.loaded / progress.total) * 100}%` }} />
             </div>
           </div>
         ) : (
-          <p className="text-xs text-white/30">France · Météo en temps réel</p>
+          <p className="text-xs text-ink-faint">France · Météo en temps réel</p>
         )}
       </div>
     );
@@ -399,15 +409,15 @@ export default function HeatmapView({ onBack, selectedCategory }: HeatmapViewPro
   if (error && points.length === 0) {
     return (
       <div className="heatmap-view min-h-screen flex flex-col items-center justify-center gap-4 px-8">
-        <span className="text-5xl">😕</span>
-        <p className="text-sm text-red-300 text-center">{error}</p>
+        <IconAlert size={48} className="text-danger" />
+        <p className="text-sm text-danger text-center">{error}</p>
         <div className="flex gap-3 mt-4">
           <button onClick={onBack}
-            className="px-6 py-2 rounded-xl bg-white/10 text-white/80 text-sm hover:bg-white/20 transition-colors">
-            ← Retour
+            className="px-6 py-2.5 rounded-xl bg-paper-raised border border-line-strong text-ink text-sm hover:bg-paper-deep transition-colors">
+            Retour
           </button>
           <button onClick={() => refresh(true)}
-            className="px-6 py-2 rounded-xl bg-emerald-700 text-white text-sm hover:bg-emerald-600 transition-colors">
+            className="px-6 py-2.5 rounded-xl bg-moss text-paper text-sm font-medium hover:bg-moss-deep transition-colors">
             Réessayer
           </button>
         </div>
@@ -421,15 +431,15 @@ export default function HeatmapView({ onBack, selectedCategory }: HeatmapViewPro
       {/* Contrôles haut gauche : Retour, rafraîchir, toggle spots */}
       <div className="absolute top-4 left-3 z-[1000] flex flex-col items-start gap-2">
         <button onClick={onBack}
-          className="h-11 pl-3 pr-4 rounded-full bg-[#10160c]/90 backdrop-blur-md border border-white/10
-            flex items-center gap-2 text-sm font-medium text-white shadow-lg hover:bg-[#1a2215] transition-colors"
+          className="h-11 pl-3 pr-4 rounded-full bg-paper-raised/95 backdrop-blur-md border border-line
+            flex items-center gap-2 text-sm font-medium text-ink shadow-lg hover:bg-paper-deep transition-colors"
           aria-label="Retour">
-          <span className="material-symbols-outlined text-xl">arrow_back</span>
+          <span className="material-symbols-outlined text-xl text-ink-soft">arrow_back</span>
           Retour
         </button>
         <button onClick={() => refresh(true)} disabled={loading}
-          className="w-11 h-11 rounded-full bg-[#10160c]/90 backdrop-blur-md border border-white/10
-            flex items-center justify-center text-white/70 shadow-lg hover:text-white transition-colors disabled:opacity-50"
+          className="w-11 h-11 rounded-full bg-paper-raised/95 backdrop-blur-md border border-line
+            flex items-center justify-center text-ink-soft shadow-lg hover:text-ink transition-colors disabled:opacity-50"
           aria-label="Rafraîchir">
           <span className={`material-symbols-outlined text-xl ${loading ? 'animate-spin' : ''}`}>
             {loading ? 'progress_activity' : 'refresh'}
@@ -440,21 +450,21 @@ export default function HeatmapView({ onBack, selectedCategory }: HeatmapViewPro
           className={`h-11 px-4 rounded-full backdrop-blur-md shadow-lg border flex items-center gap-2
             text-xs font-bold uppercase tracking-wider transition-colors ${
             showSpots
-              ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/50'
-              : 'bg-[#10160c]/90 text-white/50 border-white/10'
+              ? 'bg-moss text-paper border-moss'
+              : 'bg-paper-raised/95 text-ink-soft border-line'
           }`}
           aria-label={showSpots ? 'Masquer les lieux' : 'Afficher les lieux'}>
-          <span className={`w-2 h-2 rounded-full ${showSpots ? 'bg-emerald-400 animate-pulse' : 'bg-white/30'}`} />
+          <span className={`w-2 h-2 rounded-full ${showSpots ? 'bg-paper animate-pulse' : 'bg-line-strong'}`} />
           {showSpots ? 'Spots ON' : 'Spots OFF'}
         </button>
       </div>
 
       {/* Badge stats haut droite */}
       <div className="absolute top-4 right-3 z-[1000]">
-        <div className="bg-[#10160c]/90 backdrop-blur-md px-4 py-2 rounded-xl border border-white/10 shadow-lg text-right">
-          <div className="text-[10px] uppercase text-white/40 font-bold tracking-tight">🌡️ Carte de France</div>
-          <div className="text-lg font-bold text-white leading-tight">
-            {points.length.toLocaleString('fr-FR')} <span className="text-xs font-semibold text-white/40">forêts</span>
+        <div className="bg-paper-raised/95 backdrop-blur-md px-4 py-2 rounded-xl border border-line shadow-lg text-right">
+          <div className="text-[10px] uppercase text-ink-faint font-bold tracking-[0.18em]">Carte de France</div>
+          <div className="font-display text-lg font-bold text-ink leading-tight">
+            {points.length.toLocaleString('fr-FR')} <span className="text-xs font-semibold text-ink-faint">forêts</span>
           </div>
         </div>
       </div>
@@ -493,9 +503,10 @@ export default function HeatmapView({ onBack, selectedCategory }: HeatmapViewPro
 
       {/* Bandeau données simulées */}
       {hasSimulatedData && (
-        <div className="absolute top-44 left-3 right-3 z-[1000] bg-amber-900/90 backdrop-blur-md rounded-xl px-3 py-2 text-center">
-          <p className="text-xs text-amber-200 font-medium">
-            ⚠️ Météo temps réel indisponible — scores estimés. Réessayez dans une minute.
+        <div className="absolute top-44 left-3 right-3 z-[1000] bg-terra-wash border border-terra/40 backdrop-blur-md rounded-xl px-3 py-2 text-center">
+          <p className="flex items-center justify-center gap-1.5 text-xs text-terra font-medium">
+            <span className="material-symbols-outlined text-base leading-none">warning</span>
+            Météo temps réel indisponible — scores estimés. Réessayez dans une minute.
           </p>
         </div>
       )}

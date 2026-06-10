@@ -2,11 +2,12 @@
 // ChampIndex — Liste des espèces en saison avec recherche
 // ============================================================
 
-import { memo, useState, useMemo } from 'react';
+import { memo, useState, useMemo, type ComponentType } from 'react';
 import type { ForagingSpecies, ForagingCategory } from '../types';
 import { useFavorites, useNotes } from '../hooks/useNotebook';
 import SpeciesCard from './SpeciesCard';
 import SafetyWarning from './SafetyWarning';
+import { IconMushroom, IconPlant, IconBerry } from './Icons';
 
 interface SpeciesListProps {
   species: ForagingSpecies[];
@@ -18,20 +19,23 @@ const MONTH_NAMES = [
   'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre',
 ];
 
-const CATEGORY_LABELS: Record<ForagingCategory, { title: string; emptyEmoji: string; emptyText: string; searchPlaceholder: string }> = {
-  mushroom: { title: 'Champignons attendus', emptyEmoji: '🍂', emptyText: 'Peu de champignons attendus en cette saison avec ces conditions.', searchPlaceholder: 'Rechercher un champignon...' },
-  plant: { title: 'Plantes en saison', emptyEmoji: '🌱', emptyText: 'Peu de plantes comestibles en cette saison.', searchPlaceholder: 'Rechercher une plante...' },
-  berry: { title: 'Baies & fruits en saison', emptyEmoji: '🍃', emptyText: 'Peu de baies ou fruits sauvages en cette saison.', searchPlaceholder: 'Rechercher une baie ou fruit...' },
+type EmptyIconComponent = ComponentType<{ size?: number; className?: string }>;
+
+const CATEGORY_LABELS: Record<ForagingCategory, { title: string; EmptyIcon: EmptyIconComponent; emptyText: string; searchPlaceholder: string }> = {
+  mushroom: { title: 'Champignons attendus', EmptyIcon: IconMushroom, emptyText: 'Peu de champignons attendus en cette saison avec ces conditions.', searchPlaceholder: 'Rechercher un champignon...' },
+  plant: { title: 'Plantes en saison', EmptyIcon: IconPlant, emptyText: 'Peu de plantes comestibles en cette saison.', searchPlaceholder: 'Rechercher une plante...' },
+  berry: { title: 'Baies & fruits en saison', EmptyIcon: IconBerry, emptyText: 'Peu de baies ou fruits sauvages en cette saison.', searchPlaceholder: 'Rechercher une baie ou fruit...' },
 };
 
 function normalize(s: string): string {
-  return s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  return s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
 }
 
 export default memo(function SpeciesList({ species, selectedCategory }: SpeciesListProps) {
   const month = new Date().getMonth() + 1;
   const [search, setSearch] = useState('');
   const labels = CATEGORY_LABELS[selectedCategory];
+  const EmptyIcon = labels.EmptyIcon;
 
   const { isFavorite, toggleFavorite } = useFavorites();
   const { getNote, saveNote } = useNotes();
@@ -53,46 +57,50 @@ export default memo(function SpeciesList({ species, selectedCategory }: SpeciesL
 
   return (
     <div className="px-4 py-4">
-      <h3
-        className="text-lg font-bold text-white/90 mb-3"
-        style={{ fontFamily: 'Playfair Display, serif' }}
-      >
+      <h3 className="text-lg font-bold font-display text-ink mb-3">
         {labels.title} en {MONTH_NAMES[month]}
       </h3>
 
       {/* Barre de recherche */}
       <div className="relative mb-4">
-        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-white/30 text-sm">🔍</span>
+        <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-ink-faint text-lg pointer-events-none">
+          search
+        </span>
         <input
           type="text"
           value={search}
           onChange={e => setSearch(e.target.value)}
           placeholder={labels.searchPlaceholder}
-          className="w-full pl-9 pr-8 py-2.5 rounded-xl bg-white/5 border border-white/10
-            text-sm text-white/90 placeholder:text-white/25
-            focus:outline-none focus:border-emerald-500/50 transition-colors"
+          className="w-full pl-10 pr-10 py-2.5 rounded-xl bg-paper-raised border border-line
+            text-sm text-ink placeholder:text-ink-faint
+            focus:outline-none focus:border-moss transition-colors"
         />
         {search && (
           <button
             onClick={() => setSearch('')}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-white/30 hover:text-white/60 text-sm"
+            aria-label="Effacer la recherche"
+            className="absolute right-0 top-1/2 -translate-y-1/2 w-11 h-11 flex items-center justify-center text-ink-faint hover:text-ink transition-colors"
           >
-            &times;
+            <span className="material-symbols-outlined text-lg">close</span>
           </button>
         )}
       </div>
 
       {/* Compteur résultats */}
       {search && (
-        <p className="text-[11px] text-white/40 mb-3">
+        <p className="text-[11px] text-ink-faint mb-3">
           {filtered.length} résultat{filtered.length !== 1 ? 's' : ''} pour "{search}"
         </p>
       )}
 
       {filtered.length === 0 ? (
-        <div className="text-center py-8 text-white/40">
-          <p className="text-4xl mb-3">{search ? '🔍' : labels.emptyEmoji}</p>
-          <p>{search ? `Aucune espèce trouvée pour "${search}"` : labels.emptyText}</p>
+        <div className="text-center py-8 text-ink-faint">
+          {search ? (
+            <span className="material-symbols-outlined text-4xl mb-3 block">search_off</span>
+          ) : (
+            <EmptyIcon size={40} className="mx-auto mb-3" />
+          )}
+          <p className="text-sm">{search ? `Aucune espèce trouvée pour "${search}"` : labels.emptyText}</p>
         </div>
       ) : (
         <div className="space-y-3">
