@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+
+<html lang="fr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>ChampIndex - Fiche Espèce</title>
+<!-- Tailwind CSS CDN -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Google Fonts for Nature Theme -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Playfair+Display:ital,wght@0,700;1,700&amp;display=swap" rel="stylesheet"/>
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            forest: {
+              900: '#131910',
+              800: '#1a2215',
+              700: '#263121',
+              600: '#34432d',
+            },
+            champ: {
+              green: '#10b981',
+              amber: '#f59e0b',
+              red: '#ef4444',
+              blue: '#3b82f6',
+              gold: '#d4af37'
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            serif: ['Playfair Display', 'serif'],
+          }
+        }
+      }
+    }
+  </script>
+<style data-purpose="custom-styling">
+    body {
+      background-color: #1a2215;
+      color: #e2e8f0;
+      -webkit-font-smoothing: antialiased;
+    }
+    .glass-card {
+      background: rgba(38, 49, 33, 0.8);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .month-active {
+      background-color: #10b981;
+      color: white;
+    }
+    .month-peak {
+      background-color: #f59e0b;
+      color: white;
+    }
+    .month-inactive {
+      color: #64748b;
+    }
+  </style>
+</head>
+<body class="flex justify-center p-4">
+<!-- BEGIN: Species Card Container -->
+<main class="w-[390px] glass-card rounded-3xl overflow-hidden shadow-2xl" data-purpose="species-identification-card">
+<!-- BEGIN: Header Section -->
+<header class="relative">
+<!-- Top Action Bar -->
+<div class="absolute top-4 left-4 z-10">
+<button aria-label="Add to favorites" class="bg-black/40 p-2 rounded-full backdrop-blur-md">
+<svg class="h-6 w-6 text-red-500 fill-current" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"></path></svg>
+</button>
+</div>
+<!-- Main Photo -->
+<div class="w-full h-64 overflow-hidden">
+<img alt="Cèpe de Bordeaux" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuADsq3ZlFJMqGnzM01-_YmP4MTSRYqke-QneahR_GAMmmfrG_trCfYK_FWNzY4t_Vfxvu6CBgfIgBmXiiitZK112LrLd8A_Q7DfWrMgirW3Fqcscyu38nLk8xbqSkffW3D6a3GrOwL1TEhA6fVQjEfyV1ORMQZB64_eH7_uzL4x0fjFLmlPX6s9m9Z3AV7CoY55M9Ut65EgumgY0j6E2PLMguVNBU_TWwBg8066Ao5t6hKpTduJSrDBF3e4uJrZdqbNbwcBbWujoww"/>
+</div>
+<!-- Species Title and Badges -->
+<div class="p-5">
+<div class="flex justify-between items-start mb-2">
+<div>
+<h1 class="text-2xl font-bold text-white font-sans">Cèpe de Bordeaux</h1>
+<p class="text-sm italic text-gray-400">Boletus edulis</p>
+</div>
+<div class="flex flex-col gap-2 items-end">
+<span class="px-2 py-1 bg-red-900/40 border border-red-500 text-[10px] font-bold text-red-400 rounded-md uppercase tracking-wider">Confusion dangereuse ⚠️</span>
+<span class="px-2 py-1 bg-blue-900/40 border border-blue-500 text-[10px] font-bold text-blue-400 rounded-md uppercase tracking-wider">Pluie: élevé</span>
+</div>
+</div>
+</div>
+</header>
+<!-- END: Header Section -->
+<!-- BEGIN: Seasonality Calendar -->
+<section class="px-5 mb-6" data-purpose="growth-calendar">
+<h3 class="text-[10px] uppercase tracking-[0.2em] text-gray-500 font-bold mb-3">Saisonnalité</h3>
+<div class="flex justify-between items-center bg-forest-900/50 p-3 rounded-xl border border-white/5">
+<span class="month-inactive text-xs font-medium">J</span>
+<span class="month-inactive text-xs font-medium">F</span>
+<span class="month-inactive text-xs font-medium">M</span>
+<span class="month-inactive text-xs font-medium">A</span>
+<span class="month-inactive text-xs font-medium">M</span>
+<span class="month-active w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold">J</span>
+<span class="month-active w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold">J</span>
+<span class="month-peak w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold ring-2 ring-amber-500/50">A</span>
+<span class="month-peak w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold ring-2 ring-amber-500/50">S</span>
+<span class="month-peak w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold ring-2 ring-amber-500/50">O</span>
+<span class="month-active w-6 h-6 flex items-center justify-center rounded-full text-xs font-bold">N</span>
+<span class="month-inactive text-xs font-medium">D</span>
+</div>
+</section>
+<!-- END: Seasonality Calendar -->
+<!-- BEGIN: Detailed Information -->
+<section class="px-5 space-y-6 pb-8" data-purpose="expanded-details">
+<!-- Description -->
+<div>
+<h3 class="text-xs font-bold text-champ-green uppercase mb-2">Description</h3>
+<p class="text-sm text-gray-300 leading-relaxed">
+          Reconnaissable à son chapeau charnu, gras au toucher, de couleur noisette à brun fauve, et son pied ventru orné d'un fin réseau blanc au sommet. Excellent comestible.
+        </p>
+</div>
+<!-- Habitat Pills -->
+<div>
+<h3 class="text-xs font-bold text-champ-green uppercase mb-2">Habitat &amp; Sol</h3>
+<div class="flex flex-wrap gap-2">
+<span class="px-3 py-1 bg-forest-700 text-xs rounded-full border border-white/10">Forêts de feuillus</span>
+<span class="px-3 py-1 bg-forest-700 text-xs rounded-full border border-white/10">Sols drainés</span>
+<span class="px-3 py-1 bg-forest-700 text-xs rounded-full border border-white/10">Clairières</span>
+</div>
+</div>
+<!-- Tree Essences -->
+<div>
+<h3 class="text-xs font-bold text-champ-green uppercase mb-2">Essences d'arbres</h3>
+<div class="flex gap-4">
+<div class="flex items-center gap-2 text-sm text-gray-300">
+<span class="text-lg">🌳</span> Chênes
+          </div>
+<div class="flex items-center gap-2 text-sm text-gray-300">
+<span class="text-lg">🌲</span> Hêtres
+          </div>
+<div class="flex items-center gap-2 text-sm text-gray-300">
+<span class="text-lg">🌲</span> Sapins
+          </div>
+</div>
+</div>
+<!-- Cooking Tips -->
+<div class="bg-forest-900/40 p-4 rounded-2xl border-l-4 border-champ-gold">
+<h3 class="text-sm font-bold text-white mb-1 flex items-center gap-2">
+<span>👨‍🍳</span> Astuce cuisine
+        </h3>
+<p class="text-xs text-gray-400 italic">
+          Ne les lavez pas à grande eau. Brossez-les délicatement et essuyez-les avec un linge humide pour conserver tout leur arôme boisé.
+        </p>
+</div>
+<!-- Confusion Warnings -->
+<div>
+<h3 class="text-xs font-bold text-champ-red uppercase mb-3">Risques de confusion</h3>
+<div class="grid grid-cols-1 gap-3">
+<!-- Mortal Alert -->
+<div class="flex items-center justify-between p-3 border border-red-500/50 bg-red-950/20 rounded-xl">
+<span class="text-sm font-medium">Amanite Phalloïde</span>
+<span class="text-xs font-bold text-red-500 bg-red-500/10 px-2 py-0.5 rounded">MORTEL ☠️</span>
+</div>
+<!-- Toxic Alert -->
+<div class="flex items-center justify-between p-3 border border-amber-500/50 bg-amber-950/20 rounded-xl">
+<span class="text-sm font-medium">Bolet Satan</span>
+<span class="text-xs font-bold text-amber-500 bg-amber-500/10 px-2 py-0.5 rounded">TOXIQUE ⚠️</span>
+</div>
+</div>
+</div>
+<!-- Personal Notes -->
+<div class="relative bg-forest-900/60 p-4 rounded-xl border border-white/5">
+<div class="flex justify-between items-center mb-2">
+<h3 class="text-xs font-bold text-gray-500 uppercase">Mes Notes</h3>
+<button class="text-champ-green">
+<svg class="h-4 w-4" fill="none" stroke="currentColor" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</button>
+</div>
+<p class="text-xs text-gray-400">Trouvé près du grand chêne foudroyé en forêt de Fontainebleau le mois dernier...</p>
+</div>
+</section>
+<!-- END: Detailed Information -->
+<!-- BEGIN: Safety Disclaimer -->
+<footer class="bg-red-600 py-3 text-center" data-purpose="safety-disclaimer">
+<p class="text-[11px] font-black text-white uppercase tracking-tighter">
+        Ne consommez JAMAIS sans l'avis d'un expert
+      </p>
+</footer>
+<!-- END: Safety Disclaimer -->
+</main>
+<!-- END: Species Card Container -->
+</body></html>

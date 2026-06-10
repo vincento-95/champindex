@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+
+<html lang="fr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>ChampIndex - Identifier</title>
+<!-- BEGIN: Scripts and Stylesheets -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            forest: {
+              DEFAULT: '#1a2215',
+              light: '#2a3523',
+              border: '#3d4d35'
+            },
+            champ: {
+              green: '#4ade80',
+              red: '#ef4444'
+            }
+          }
+        }
+      }
+    }
+  </script>
+<style data-purpose="custom-layout">
+    body {
+      background-color: #1a2215;
+      font-family: system-ui, -apple-system, sans-serif;
+      color: #ffffff;
+      width: 390px;
+      margin: 0 auto;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    .dashed-border {
+      background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='16' ry='16' stroke='%234ade80' stroke-width='3' stroke-dasharray='10%2c 10' stroke-dashoffset='0' stroke-linecap='square'/%3e%3c/svg%3e");
+      border-radius: 16px;
+    }
+  </style>
+<!-- END: Scripts and Stylesheets -->
+</head>
+<body class="bg-forest">
+<!-- BEGIN: Header -->
+<header class="p-6 flex items-center justify-between" data-purpose="navigation-header">
+<button aria-label="Retour" class="w-10 h-10 flex items-center justify-start focus:outline-none">
+<svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</button>
+<h1 class="text-xl font-bold">Identifier</h1>
+<div class="bg-forest-light px-3 py-1 rounded-full text-xs font-medium border border-forest-border">
+      3 scans restants
+    </div>
+</header>
+<!-- END: Header -->
+<!-- BEGIN: Warning Section -->
+<main class="flex-grow px-6 flex flex-col gap-8">
+<!-- Red warning box -->
+<div class="bg-red-900/30 border border-red-500/50 p-4 rounded-xl flex gap-3" data-purpose="safety-warning">
+<span class="text-xl">⚠️</span>
+<p class="text-xs text-red-200 leading-relaxed">
+        L'identification par IA est <span class="font-bold">INDICATIVE</span> uniquement. Ne consommez <span class="font-bold">JAMAIS</span> sans l'avis d'un expert.
+      </p>
+</div>
+<!-- END: Warning Section -->
+<!-- BEGIN: Capture Actions -->
+<section class="flex flex-col items-center gap-6 py-4" data-purpose="capture-controls">
+<!-- Large Take Photo Button -->
+<button class="w-full aspect-square dashed-border flex flex-col items-center justify-center gap-4 bg-forest-light/30 hover:bg-forest-light/50 transition-colors active:scale-95 duration-200">
+<div class="text-5xl">📸</div>
+<span class="text-champ-green font-bold text-lg">Prendre une photo</span>
+</button>
+<!-- Subtle Gallery Button -->
+<button class="flex items-center gap-2 text-gray-400 hover:text-white transition-colors" data-purpose="gallery-access">
+<span class="text-lg">🖼️</span>
+<span class="text-sm font-medium">Galerie</span>
+</button>
+</section>
+<!-- END: Capture Actions -->
+<!-- BEGIN: Photo Tips -->
+<section class="mt-auto mb-8" data-purpose="educational-tips">
+<div class="bg-forest-light rounded-2xl p-5 border border-forest-border shadow-lg">
+<h2 class="text-sm font-semibold uppercase tracking-wider text-gray-400 mb-4">Conseils photo</h2>
+<ul class="space-y-4">
+<li class="flex items-start gap-3">
+<span class="text-lg leading-none">💡</span>
+<p class="text-sm text-gray-200">Évitez les zones trop sombres</p>
+</li>
+<li class="flex items-start gap-3">
+<span class="text-lg leading-none">🔍</span>
+<p class="text-sm text-gray-200">Cadrez bien la plante entière</p>
+</li>
+<li class="flex items-start gap-3">
+<span class="text-lg leading-none">🌿</span>
+<p class="text-sm text-gray-200">Prenez plusieurs angles</p>
+</li>
+</ul>
+</div>
+</section>
+<!-- END: Photo Tips -->
+</main>
+</body></html>

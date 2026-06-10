@@ -1,0 +1,221 @@
+@import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800&display=swap');
+
+/* ============================================================
+   ChampIndex — Styles globaux
+   ============================================================ */
+
+@theme {
+  --color-forest-900: #1a2215;
+  --color-forest-800: #232e1c;
+  --color-forest-700: #2d3a1f;
+  --color-forest-600: #3a4a28;
+  --color-gold: #d4a855;
+  --color-gold-light: #c9b896;
+  --color-cream: #f5f0e8;
+  --color-earth-red: #ae2012;
+}
+
+/* Reset & base */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background: linear-gradient(170deg, var(--color-forest-900) 0%, var(--color-forest-700) 50%, var(--color-forest-800) 100%);
+  color: white;
+  min-height: 100svh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Texture végétale subtile en overlay */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: radial-gradient(circle at 20% 50%, rgba(45, 58, 31, 0.3) 0%, transparent 50%),
+                    radial-gradient(circle at 80% 20%, rgba(58, 74, 40, 0.2) 0%, transparent 40%),
+                    radial-gradient(circle at 60% 80%, rgba(26, 34, 21, 0.4) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+#root {
+  position: relative;
+  z-index: 1;
+  min-height: 100svh;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+/* Desktop : centré avec ombre */
+@media (min-width: 481px) {
+  body {
+    background: #111;
+  }
+  #root {
+    min-height: 100vh;
+    box-shadow: 0 0 60px rgba(0, 0, 0, 0.5);
+    background: linear-gradient(170deg, var(--color-forest-900) 0%, var(--color-forest-700) 50%, var(--color-forest-800) 100%);
+  }
+}
+
+/* Scrollbar cachée pour le bandeau 7 jours */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Heatmap : plein écran sans contrainte de largeur */
+#root:has(.heatmap-view) {
+  max-width: 100%;
+  box-shadow: none;
+}
+
+/* Animation slide-up pour le bottom sheet */
+@keyframes slide-up {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.animate-slide-up {
+  animation: slide-up 0.3s ease-out;
+}
+
+/* Leaflet overrides */
+.leaflet-container {
+  background: var(--color-forest-900) !important;
+}
+
+/* Tooltip Leaflet dark theme */
+.foraging-tooltip {
+  background: rgba(26, 34, 21, 0.9) !important;
+  border: 1px solid rgba(255,255,255,0.15) !important;
+  color: white !important;
+  border-radius: 8px !important;
+  padding: 4px 10px !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.4) !important;
+}
+.foraging-tooltip::before {
+  border-top-color: rgba(26, 34, 21, 0.9) !important;
+}
+
+/* Material Symbols */
+.material-symbols-outlined {
+  font-family: 'Material Symbols Outlined';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-smoothing: antialiased;
+  font-variation-settings: 'FILL' 0;
+}
+
+.material-symbols-outlined.filled {
+  font-variation-settings: 'FILL' 1;
+}
+
+/* Transitions globales */
+* {
+  transition-property: background-color, border-color, color, opacity, transform;
+  transition-duration: 0.2s;
+  transition-timing-function: ease-out;
+}
+
+/* Empêcher les transitions sur les éléments de scroll et la carte */
+.scrollbar-hide *,
+.leaflet-container * {
+  transition-property: none;
+}
+
+/* ── Micro-animations ── */
+
+/* Fade in pour les vues */
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.3s ease-out;
+}
+
+/* Scale on press pour les cartes */
+.press-scale {
+  transition: transform 0.15s ease-out;
+}
+.press-scale:active {
+  transform: scale(0.97);
+}
+
+/* Stagger animation pour les listes */
+@keyframes stagger-in {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.stagger-child {
+  animation: stagger-in 0.3s ease-out both;
+}
+.stagger-child:nth-child(1) { animation-delay: 0ms; }
+.stagger-child:nth-child(2) { animation-delay: 50ms; }
+.stagger-child:nth-child(3) { animation-delay: 100ms; }
+.stagger-child:nth-child(4) { animation-delay: 150ms; }
+.stagger-child:nth-child(5) { animation-delay: 200ms; }
+.stagger-child:nth-child(6) { animation-delay: 250ms; }
+.stagger-child:nth-child(n+7) { animation-delay: 300ms; }
+
+/* ── Safe area (iPhone notch/home indicator) ── */
+.safe-area-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* ── Accessibilité ── */
+
+/* Focus visible pour navigation clavier */
+:focus-visible {
+  outline: 2px solid #d4a855;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .animate-spin, .animate-pulse, .animate-slide-up {
+    animation: none !important;
+  }
+}
+
+/* Skip to content (caché sauf focus) */
+.sr-only:not(:focus):not(:active) {
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  height: 1px;
+  overflow: hidden;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
+}

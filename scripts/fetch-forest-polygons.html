@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>ChampIndex — Génération des polygones forestiers IGN</title>
+  <style>
+    body { font-family: system-ui; background: #1a2215; color: #e5e7eb; padding: 2rem; max-width: 800px; margin: 0 auto; }
+    h1 { color: #d4a855; }
+    #status { white-space: pre-wrap; font-size: 13px; background: #111; padding: 1rem; border-radius: 8px; max-height: 400px; overflow-y: auto; }
+    button { background: #22c55e; color: white; border: none; padding: 12px 24px; border-radius: 8px; font-size: 16px; cursor: pointer; margin: 8px 4px; }
+    button:disabled { opacity: 0.4; cursor: not-allowed; }
+    button.secondary { background: #3b82f6; }
+    .progress { width: 100%; height: 8px; background: #333; border-radius: 4px; margin: 12px 0; }
+    .progress-bar { height: 100%; background: #22c55e; border-radius: 4px; transition: width 0.3s; }
+  </style>
+</head>
+<body>
+  <h1>🌲 Génération des polygones forestiers</h1>
+  <p>Ce script interroge l'API IGN BD Forêt V2 (WFS) pour récupérer les contours précis des 135 lieux de foraging.</p>
+
+  <button id="startBtn" onclick="start()">Lancer la génération</button>
+  <button id="downloadBtn" class="secondary" onclick="download()" disabled>Télécharger le GeoJSON</button>
+
+  <div class="progress"><div class="progress-bar" id="progressBar" style="width: 0%"></div></div>
+  <div id="status">En attente...</div>
+
+  <script>
+    // Les 135 lieux (injectés depuis locations-db.ts)
+    const LOCATIONS = [
+  {
+    "name": "Forêt de Fontainebleau",
+    "lat": 48.4,
+    "lng": 2.7
+  },
+  {
+    "name": "Forêt de Rambouillet",
+    "lat": 48.6,
+    "lng": 1.8
+  },
+  {
+    "name": "Forêt de Saint-Germain-en-Laye",
+    "lat": 48.9,
+    "lng": 2.1
+  },
+  {
+    "name": "Forêt de Sénart",
+    "lat": 48.65,
+    "lng": 2.48
+  },
+  {
+    "name": "Forêt de Meudon",
+    "lat": 48.79,
+    "lng": 2.23
+  },
+  {
+    "name": "Forêt de Crécy-en-Brie",
+    "lat": 48.85,
+    "lng": 2.9
+  },
+  {
+    "name": "Forêt de Villefermoy",
+    "lat": 48.45,
+    "lng": 2.85
+  },
+  {
+    "name": "Bois de Vincennes",
+    "lat": 48.83,
+    "lng": 2.43
+  },
+  {
+    "name": "Forêt de Ferrières",
+    "lat": 48.82,
+    "lng": 2.72
+  },
+  {
+    "name": "Forêt de Brotonne",
+    "lat": 49.45,
+    "lng": 0.72
+  },
+  {
+    "name": "Forêt de Cerisy",
+    "lat": 49.18,
+    "lng": -0.87
+  },
+  {
+    "name": "Forêt de Bellême",
+    "lat": 48.37,
+    "lng": 0.57
+  },
+  {
+    "name": "Forêt du Perche (Réno-Valdieu)",
+    "lat": 48.42,
+    "lng": 0.68
+  },
+  {
+    "name": "Côte de Nacre / Côte Fleurie (estran)",
+    "lat": 49.3,
+    "lng": -0.4
+  },
+  {
+    "name": "Baie du Mont-Saint-Michel (prés salés)",
+    "lat": 48.63,
+    "lng": -1.52
+  },
+  {
+    "name": "Forêt de Grimbosq",
+    "lat": 48.97,
+    "lng": -0.45
+  },
+  {
+    "name": "Forêt de Paimpont (Brocéliande)",
+    "lat": 48,
+    "lng": -2.17
+  },
+  {
+    "name": "Forêt de Huelgoat",
+    "lat": 48.37,
+    "lng": -3.75
+  },
+  {
+    "name": "Forêt du Cranou",
+    "lat": 48.3,
+    "lng": -4.08
+  },
+  {
+    "name": "Forêt de Quénécan",
+    "lat": 48.2,
+    "lng": -3.05
+  },
+  {
+    "name": "Landes de Lanvaux",
+    "lat": 47.78,
+    "lng": -2.65
+  },
+  {
+    "name": "Golfe du Morbihan (prés salés)",
+    "lat": 47.58,
+    "lng": -2.78
+  },
+  {
+    "name": "Forêt de Fougères",
+    "lat": 48.38,
+    "lng": -1.2
+  },
+  {
+    "name": "Forêt de Mervent-Vouvant",
+    "lat": 46.48,
+    "lng": -0.72
+  },
+  {
+    "name": "Forêt de Bercé",
+    "lat": 47.82,
+    "lng": 0.42
+  },
+  {
+    "name": "Forêt de Chandelais",
+    "lat": 47.35,
+    "lng": -0.12
+  },
+  {
+    "name": "Île de Noirmoutier",
+    "lat": 47,
+    "lng": -2.25
+  },
+  {
+    "name": "Forêt de Brissac / Beaulieu",
+    "lat": 47.35,
+    "lng": -0.52
+  },
+  {
+    "name": "Forêt du Gâvre",
+    "lat": 47.52,
+    "lng": -1.82
+  },
+  {
+    "name": "Forêt de Saint-Amand",
+    "lat": 50.47,
+    "lng": 3.42
+  },
+  {
+    "name": "Forêt de Crécy",
+    "lat": 50.22,
+    "lng": 1.88
+  },
+  {
+    "name": "Forêt de Mormal",
+    "lat": 50.18,
+    "lng": 3.72
+  },
+  {
+    "name": "Baie de Somme",
+    "lat": 50.22,
+    "lng": 1.6
+  },
+  {
+    "name": "Forêt de Thiérache",
+    "lat": 49.88,
+    "lng": 3.85
+  },
+  {
+    "name": "Massif des Vosges (versant alsacien)",
+    "lat": 48,
+    "lng": 7
+  },
+  {
+    "name": "Forêt de Darney",
+    "lat": 48.08,
+    "lng": 6.05
+  },
+  {
+    "name": "Plateau de Langres",
+    "lat": 47.85,
+    "lng": 5.33
+  },
+  {
+    "name": "Vallée de la Meuse",
+    "lat": 49.1,
+    "lng": 5.38
+  },
+  {
+    "name": "Forêt de Verdun / Argonne",
+    "lat": 49.18,
+    "lng": 5.2
+  },
+  {
+    "name": "Forêt de la Joux (Jura)",
+    "lat": 46.75,
+    "lng": 6.08
+  },
+  {
+    "name": "Forêt de Chaux",
+    "lat": 47.05,
+    "lng": 5.72
+  },
+  {
+    "name": "Forêt de Parroy",
+    "lat": 48.62,
+    "lng": 6.55
+  },
+  {
+    "name": "Forêt du Morvan",
+    "lat": 47.1,
+    "lng": 4
+  },
+  {
+    "name": "Haut-Jura",
+    "lat": 46.4,
+    "lng": 5.95
+  },
+  {
+    "name": "Forêt de Pontarlier / Risoux",
+    "lat": 46.9,
+    "lng": 6.38
+  },
+  {
+    "name": "Sologne",
+    "lat": 47.55,
+    "lng": 1.88
+  },
+  {
+    "name": "Forêt de Chambord",
+    "lat": 47.62,
+    "lng": 1.52
+  },
+  {
+    "name": "Forêt de Chinon",
+    "lat": 47.15,
+    "lng": 0.25
+  },
+  {
+    "name": "Vallée de la Loire (ripisylve)",
+    "lat": 47.4,
+    "lng": 1.5
+  },
+  {
+    "name": "Forêt de Boulogne (Berry)",
+    "lat": 46.8,
+    "lng": 1.9
+  },
+  {
+    "name": "Forêt de Marchenoir",
+    "lat": 47.88,
+    "lng": 1.28
+  },
+  {
+    "name": "Périgord Noir (forêts)",
+    "lat": 44.9,
+    "lng": 1.2
+  },
+  {
+    "name": "Forêt de la Double",
+    "lat": 45.08,
+    "lng": 0.28
+  },
+  {
+    "name": "Forêt de Moulière",
+    "lat": 46.68,
+    "lng": 0.48
+  },
+  {
+    "name": "Plateau de Millevaches",
+    "lat": 45.65,
+    "lng": 2.05
+  },
+  {
+    "name": "Forêt de Châlus / Monts de Châlus",
+    "lat": 45.65,
+    "lng": 0.95
+  },
+  {
+    "name": "Île de Ré (estran / marais)",
+    "lat": 46.2,
+    "lng": -1.4
+  },
+  {
+    "name": "Cévennes / Mont Lozère",
+    "lat": 44.3,
+    "lng": 3.6
+  },
+  {
+    "name": "Montagne Noire",
+    "lat": 43.42,
+    "lng": 2.35
+  },
+  {
+    "name": "Pyrénées centrales (Luchonnais)",
+    "lat": 42.8,
+    "lng": 0.6
+  },
+  {
+    "name": "Forêt de Grésigne",
+    "lat": 44.02,
+    "lng": 1.72
+  },
+  {
+    "name": "Étangs littoraux (Thau, Leucate)",
+    "lat": 43.4,
+    "lng": 3.6
+  },
+  {
+    "name": "Gers / Gascogne (bocage)",
+    "lat": 43.65,
+    "lng": 0.58
+  },
+  {
+    "name": "Monts du Cantal",
+    "lat": 45.3,
+    "lng": 2.8
+  },
+  {
+    "name": "Chaîne des Puys",
+    "lat": 45.78,
+    "lng": 2.95
+  },
+  {
+    "name": "Forêt de la Comté",
+    "lat": 45.62,
+    "lng": 3.15
+  },
+  {
+    "name": "Livradois-Forez",
+    "lat": 45.5,
+    "lng": 3.6
+  },
+  {
+    "name": "Ardèche (vallées et plateaux)",
+    "lat": 44.65,
+    "lng": 4.35
+  },
+  {
+    "name": "Monts du Lyonnais",
+    "lat": 45.65,
+    "lng": 4.45
+  },
+  {
+    "name": "Pilat",
+    "lat": 45.37,
+    "lng": 4.55
+  },
+  {
+    "name": "Bugey / Ain (plateaux calcaires)",
+    "lat": 45.9,
+    "lng": 5.5
+  },
+  {
+    "name": "Chartreuse",
+    "lat": 45.35,
+    "lng": 5.8
+  },
+  {
+    "name": "Bauges",
+    "lat": 45.62,
+    "lng": 6.15
+  },
+  {
+    "name": "Vercors",
+    "lat": 44.95,
+    "lng": 5.45
+  },
+  {
+    "name": "Belledonne",
+    "lat": 45.2,
+    "lng": 6.02
+  },
+  {
+    "name": "Vanoise (vallées basses)",
+    "lat": 45.35,
+    "lng": 6.72
+  },
+  {
+    "name": "Plateau de Millevaches versant auvergnat",
+    "lat": 45.55,
+    "lng": 2.5
+  },
+  {
+    "name": "Mont Ventoux",
+    "lat": 44.17,
+    "lng": 5.28
+  },
+  {
+    "name": "Massif des Maures",
+    "lat": 43.4,
+    "lng": 6.2
+  },
+  {
+    "name": "Alpilles",
+    "lat": 43.72,
+    "lng": 4.82
+  },
+  {
+    "name": "Camargue",
+    "lat": 43.5,
+    "lng": 4.5
+  },
+  {
+    "name": "Mercantour (vallées basses)",
+    "lat": 44.1,
+    "lng": 6.95
+  },
+  {
+    "name": "Forêt de la Sainte-Baume",
+    "lat": 43.33,
+    "lng": 5.78
+  },
+  {
+    "name": "Îles de Lérins / Estérel littoral",
+    "lat": 43.52,
+    "lng": 6.98
+  },
+  {
+    "name": "Forêt de Vizzavona",
+    "lat": 42.12,
+    "lng": 9.12
+  },
+  {
+    "name": "Forêt de Bavella",
+    "lat": 41.8,
+    "lng": 9.22
+  },
+  {
+    "name": "Forêt de Valdu-Niellu",
+    "lat": 42.22,
+    "lng": 9.02
+  },
+  {
+    "name": "Maquis littoral",
+    "lat": 42,
+    "lng": 9
+  },
+  {
+    "name": "Forêt de Bonifatu",
+    "lat": 42.48,
+    "lng": 8.88
+  },
+  {
+    "name": "Dunes atlantiques (Landes → Vendée)",
+    "lat": 45.5,
+    "lng": -1.2
+  },
+  {
+    "name": "Côte basque (Corniche)",
+    "lat": 43.35,
+    "lng": -1.72
+  }
+];
+
+    const WFS_BASE = 'https://data.geopf.fr/wfs/ows';
+    const RADIUS = 0.04; // ~4.5km en degrés
+    let allFeatures = [];
+    let statusEl, progressBar;
+
+    function log(msg) {
+      statusEl.textContent += msg + '\n';
+      statusEl.scrollTop = statusEl.scrollHeight;
+    }
+
+    async function fetchForestPolygons(lat, lon, name) {
+      const bbox = `${lon - RADIUS},${lat - RADIUS},${lon + RADIUS},${lat + RADIUS},EPSG:4326`;
+      const url = `${WFS_BASE}?SERVICE=WFS&VERSION=2.0.0&REQUEST=GetFeature` +
+        `&TYPENAME=LANDCOVER.FORESTINVENTORY.V2:formation_vegetale` +
+        `&OUTPUTFORMAT=application/json` +
+        `&SRSNAME=EPSG:4326` +
+        `&BBOX=${bbox}` +
+        `&COUNT=200`;
+
+      const resp = await fetch(url);
+      if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+      const data = await resp.json();
+
+      // Filtrer : garder uniquement les forêts (pas les prairies, cultures, etc.)
+      const forests = (data.features || []).filter(f => {
+        const tfv = (f.properties?.tfv || '').toLowerCase();
+        return tfv.includes('forêt') || tfv.includes('peupleraie') || tfv.includes('bois');
+      });
+
+      // Ajouter le nom du lieu comme propriété
+      for (const f of forests) {
+        f.properties._locationName = name;
+        f.properties._locationId = name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+      }
+
+      return forests;
+    }
+
+    async function start() {
+      statusEl = document.getElementById('status');
+      progressBar = document.getElementById('progressBar');
+      document.getElementById('startBtn').disabled = true;
+      allFeatures = [];
+      statusEl.textContent = '';
+
+      log('Début de la génération...');
+      log(`${LOCATIONS.length} lieux à traiter\n`);
+
+      for (let i = 0; i < LOCATIONS.length; i++) {
+        const loc = LOCATIONS[i];
+        const pct = Math.round((i / LOCATIONS.length) * 100);
+        progressBar.style.width = pct + '%';
+
+        try {
+          const features = await fetchForestPolygons(loc.lat, loc.lng, loc.name);
+          allFeatures.push(...features);
+          log(`✅ ${i + 1}/${LOCATIONS.length} — ${loc.name} : ${features.length} polygones`);
+        } catch (e) {
+          log(`❌ ${i + 1}/${LOCATIONS.length} — ${loc.name} : ${e.message}`);
+        }
+
+        // Throttle : 200ms entre chaque requête
+        if (i < LOCATIONS.length - 1) {
+          await new Promise(r => setTimeout(r, 200));
+        }
+      }
+
+      progressBar.style.width = '100%';
+      log(`\n✅ Terminé ! ${allFeatures.length} polygones forestiers récupérés.`);
+      log(`Cliquez "Télécharger le GeoJSON" pour sauvegarder.`);
+      document.getElementById('downloadBtn').disabled = false;
+    }
+
+    function download() {
+      const geojson = {
+        type: 'FeatureCollection',
+        features: allFeatures,
+      };
+
+      const blob = new Blob([JSON.stringify(geojson)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'forest-polygons.json';
+      a.click();
+      URL.revokeObjectURL(url);
+      log('\n📥 Fichier téléchargé : forest-polygons.json');
+    }
+  </script>
+</body>
+</html>

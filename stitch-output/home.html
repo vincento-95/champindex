@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+
+<html lang="fr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>ChampIndex - Compagnon de Cueillette</title>
+<!-- Tailwind CSS CDN with plugins -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Google Fonts for the elegant serif title -->
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            serif: ['"Playfair Display"', 'serif'],
+            sans: ['Inter', 'sans-serif'],
+          },
+          colors: {
+            forest: {
+              DEFAULT: '#1a2215',
+              light: '#2a3524',
+              accent: '#3e5235',
+            }
+          }
+        }
+      }
+    }
+  </script>
+<style data-purpose="typography">
+    .gold-gradient-text {
+      background: linear-gradient(to bottom, #fde68a, #d97706);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      display: inline-block;
+    }
+  </style>
+<style data-purpose="layout">
+    body {
+      background-color: #1a2215;
+      color: #e5e7eb;
+      width: 390px;
+      margin: 0 auto;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .custom-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
+</head>
+<body class="font-sans antialiased">
+<!-- BEGIN: MainHeader -->
+<header class="pt-8 pb-6 px-5 flex items-center justify-center space-x-2" data-purpose="app-header">
+<span aria-label="Mushroom Icon" class="text-3xl" role="img">🍄</span>
+<h1 class="font-serif text-3xl font-bold gold-gradient-text">ChampIndex</h1>
+</header>
+<!-- END: MainHeader -->
+<main class="px-5 space-y-8">
+<!-- BEGIN: NavigationSelector -->
+<nav class="bg-black/30 p-1.5 rounded-full flex justify-between items-center" data-purpose="category-toggle">
+<button class="flex-1 py-2 px-4 rounded-full text-sm font-semibold bg-emerald-600 text-white transition-all">
+        Champignons
+      </button>
+<button class="flex-1 py-2 px-4 rounded-full text-sm font-semibold text-blue-300 hover:bg-blue-900/20 transition-all">
+        Plantes
+      </button>
+<button class="flex-1 py-2 px-4 rounded-full text-sm font-semibold text-purple-300 hover:bg-purple-900/20 transition-all">
+        Baies
+      </button>
+</nav>
+<!-- END: NavigationSelector -->
+<!-- BEGIN: MainActionButtons -->
+<section class="space-y-4" data-purpose="primary-actions">
+<!-- Primary Location Button -->
+<button class="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-emerald-600 to-green-700 text-white font-bold flex items-center justify-center space-x-3 shadow-lg active:scale-95 transition-transform">
+<span class="text-lg">📍</span>
+<span>Utiliser ma position</span>
+</button>
+<!-- Secondary Photo Button -->
+<button class="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-amber-600 to-orange-700 text-white font-bold flex items-center justify-center space-x-3 shadow-lg active:scale-95 transition-transform">
+<span class="text-lg">📸</span>
+<span>Identifier une espèce (photo)</span>
+</button>
+<!-- Icon Button Row -->
+<div class="grid grid-cols-3 gap-3">
+<button class="flex flex-col items-center justify-center py-3 rounded-2xl bg-forest-light border border-forest-accent hover:bg-forest-accent transition-colors">
+<span class="text-xl mb-1">🌡️</span>
+<span class="text-[10px] uppercase tracking-wider font-bold opacity-80">Carte</span>
+</button>
+<button class="flex flex-col items-center justify-center py-3 rounded-2xl bg-forest-light border border-forest-accent hover:bg-forest-accent transition-colors">
+<span class="text-xl mb-1">🌲</span>
+<span class="text-[10px] uppercase tracking-wider font-bold opacity-80">Habitats</span>
+</button>
+<button class="flex flex-col items-center justify-center py-3 rounded-2xl bg-forest-light border border-forest-accent hover:bg-forest-accent transition-colors">
+<span class="text-xl mb-1">📓</span>
+<span class="text-[10px] uppercase tracking-wider font-bold opacity-80">Carnet</span>
+</button>
+</div>
+</section>
+<!-- END: MainActionButtons -->
+<!-- BEGIN: SeasonalAlerts -->
+<section class="space-y-3" data-purpose="seasonal-updates">
+<h2 class="text-sm font-bold uppercase tracking-widest text-emerald-500/80 px-1">À surveiller ce mois-ci</h2>
+<div class="flex space-x-4 overflow-x-auto pb-4 custom-scrollbar">
+<!-- Alert Card 1 -->
+<div class="flex-shrink-0 w-32 p-4 rounded-2xl bg-forest-light border border-emerald-900/30">
+<div class="text-2xl mb-2">🍄</div>
+<p class="text-xs font-semibold leading-tight text-emerald-100">Cèpes de Bordeaux</p>
+</div>
+<!-- Alert Card 2 -->
+<div class="flex-shrink-0 w-32 p-4 rounded-2xl bg-forest-light border border-emerald-900/30">
+<div class="text-2xl mb-2">🍄</div>
+<p class="text-xs font-semibold leading-tight text-emerald-100">Chanterelles Jaunes</p>
+</div>
+<!-- Alert Card 3 -->
+<div class="flex-shrink-0 w-32 p-4 rounded-2xl bg-forest-light border border-emerald-900/30">
+<div class="text-2xl mb-2">🍄</div>
+<p class="text-xs font-semibold leading-tight text-emerald-100">Pieds-de-mouton</p>
+</div>
+<!-- Alert Card 4 -->
+<div class="flex-shrink-0 w-32 p-4 rounded-2xl bg-forest-light border border-emerald-900/30">
+<div class="text-2xl mb-2">🍄</div>
+<p class="text-xs font-semibold leading-tight text-emerald-100">Trompettes de la mort</p>
+</div>
+</div>
+</section>
+<!-- END: SeasonalAlerts -->
+<!-- BEGIN: ForestSpotsGrid -->
+<section class="space-y-3 pb-10" data-purpose="location-grid">
+<h2 class="text-sm font-bold uppercase tracking-widest text-emerald-500/80 px-1">Spots forestiers proches</h2>
+<div class="grid grid-cols-2 gap-4">
+<!-- Repeated cards for grid display (Total 12) -->
+<div class="p-4 rounded-2xl bg-forest-light/60 border border-white/5 flex items-start space-x-3">
+<span class="text-lg">🌲</span>
+<div>
+<p class="text-sm font-bold text-white leading-none">Fontainebleau</p>
+<p class="text-[10px] text-emerald-500 mt-1 uppercase font-medium">Île-de-France</p>
+</div>
+</div>
+<div class="p-4 rounded-2xl bg-forest-light/60 border border-white/5 flex items-start space-x-3">
+<span class="text-lg">🌳</span>
+<div>
+<p class="text-sm font-bold text-white leading-none">Brocéliande</p>
+<p class="text-[10px] text-emerald-500 mt-1 uppercase font-medium">Bretagne</p>
+</div>
+</div>
+<div class="p-4 rounded-2xl bg-forest-light/60 border border-white/5 flex items-start space-x-3">
+<span class="text-lg">🌲</span>
+<div>
+<p class="text-sm font-bold text-white leading-none">Vanoise</p>
+<p class="text-[10px] text-emerald-500 mt-1 uppercase font-medium">Auvergne-Rhône</p>
+</div>
+</div>
+<div class="p-4 rounded-2xl bg-forest-light/60 border border-white/5 flex items-start space-x-3">
+<span class="text-lg">🌿</span>
+<div>
+<p class="text-sm font-bold text-white leading-none">Compiègne</p>
+<p class="text-[10px] text-emerald-500 mt-1 uppercase font-medium">Hauts-de-France</p>
+</div>
+</div>
+<!-- ... and 8 more cards for the grid ... -->
+<div class="p-4 rounded-2xl bg-forest-light/60 border border-white/5 flex items-start space-x-3">
+<span class="text-lg">🌲</span>
+<div>
+<p class="text-sm font-bold text-white leading-none">Les Landes</p>
+<p class="text-[10px] text-emerald-500 mt-1 uppercase font-medium">Nouvelle-Aquit.</p>
+</div>
+</div>
+<div class="p-4 rounded-2xl bg-forest-light/60 border border-white/5 flex items-start space-x-3">
+<span class="text-lg">🌳</span>
+<div>
+<p class="text-sm font-bold text-white leading-none">Vosges Nord</p>
+<p class="text-[10px] text-emerald-500 mt-1 uppercase font-medium">Grand Est</p>
+</div>
+</div>
+<div class="p-4 rounded-2xl bg-forest-light/60 border border-white/5 flex items-start space-x-3">
+<span class="text-lg">🌲</span>
+<div>
+<p class="text-sm font-bold text-white leading-none">Chambord</p>
+<p class="text-[10px] text-emerald-500 mt-1 uppercase font-medium">Centre-Val Loire</p>
+</div>
+</div>
+<div class="p-4 rounded-2xl bg-forest-light/60 border border-white/5 flex items-start space-x-3">
+<span class="text-lg">🌿</span>
+<div>
+<p class="text-sm font-bold text-white leading-none">Verdon</p>
+<p class="text-[10px] text-emerald-500 mt-1 uppercase font-medium">PACA</p>
+</div>
+</div>
+<div class="p-4 rounded-2xl bg-forest-light/60 border border-white/5 flex items-start space-x-3">
+<span class="text-lg">🌲</span>
+<div>
+<p class="text-sm font-bold text-white leading-none">Morvan</p>
+<p class="text-[10px] text-emerald-500 mt-1 uppercase font-medium">Bourgogne</p>
+</div>
+</div>
+<div class="p-4 rounded-2xl bg-forest-light/60 border border-white/5 flex items-start space-x-3">
+<span class="text-lg">🌳</span>
+<div>
+<p class="text-sm font-bold text-white leading-none">Ecouves</p>
+<p class="text-[10px] text-emerald-500 mt-1 uppercase font-medium">Normandie</p>
+</div>
+</div>
+<div class="p-4 rounded-2xl bg-forest-light/60 border border-white/5 flex items-start space-x-3">
+<span class="text-lg">🌲</span>
+<div>
+<p class="text-sm font-bold text-white leading-none">Ardennes</p>
+<p class="text-[10px] text-emerald-500 mt-1 uppercase font-medium">Grand Est</p>
+</div>
+</div>
+<div class="p-4 rounded-2xl bg-forest-light/60 border border-white/5 flex items-start space-x-3">
+<span class="text-lg">🌿</span>
+<div>
+<p class="text-sm font-bold text-white leading-none">Cévennes</p>
+<p class="text-[10px] text-emerald-500 mt-1 uppercase font-medium">Occitanie</p>
+</div>
+</div>
+</div>
+</section>
+<!-- END: ForestSpotsGrid -->
+</main>
+<!-- BEGIN: MainFooter -->
+<footer class="mt-4 pb-12 px-8 flex flex-col items-center space-y-6 border-t border-emerald-900/20 pt-8" data-purpose="app-footer">
+<!-- Notification Toggle -->
+<div class="flex items-center space-x-4">
+<span class="text-xs font-medium text-emerald-100/60 uppercase tracking-widest">Alertes locales</span>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-forest-accent rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-600"></div>
+</label>
+</div>
+<!-- Footer Credits -->
+<div class="text-center">
+<p class="text-[10px] text-emerald-100/30 uppercase tracking-[0.2em] font-medium leading-relaxed">
+        © 2023 ChampIndex Studio<br/>
+        Cueillez avec responsabilité
+      </p>
+</div>
+</footer>
+<!-- END: MainFooter -->
+</body></html>

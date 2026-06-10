@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="fr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#fbbf24", // Amber accent
+                        "background-light": "#f8f6f6",
+                        "background-dark": "#1a2215", // Dark forest
+                        "forest-neutral": "#2d3828",
+                        "forest-success": "#4ade80",
+                    },
+                    fontFamily: {
+                        "display": ["Public Sans"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Public Sans', sans-serif; }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 antialiased">
+<!-- Mobile Container (390px fixed width simulation for preview) -->
+<div class="relative mx-auto min-h-screen w-full max-w-[390px] flex flex-col bg-background-light dark:bg-background-dark shadow-2xl overflow-x-hidden">
+<!-- Top Bar -->
+<div class="flex items-center bg-background-light dark:bg-background-dark p-4 pb-2 justify-between border-b border-forest-neutral/20">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">location_on</span>
+<h2 class="text-slate-900 dark:text-slate-100 text-lg font-bold leading-tight tracking-tight">Forêt de Fontainebleau</h2>
+</div>
+<button class="text-primary text-sm font-bold bg-primary/10 px-3 py-1 rounded-full hover:bg-primary/20 transition-colors">
+                Changer
+            </button>
+</div>
+<!-- Tab Bar -->
+<div class="bg-background-light dark:bg-background-dark sticky top-0 z-10">
+<div class="flex border-b border-forest-neutral/30 px-4 justify-between">
+<a class="flex flex-col items-center justify-center border-b-2 border-primary text-primary pb-3 pt-4 flex-1" href="#">
+<p class="text-sm font-bold">Score</p>
+</a>
+<a class="flex flex-col items-center justify-center border-b-2 border-transparent text-slate-500 dark:text-slate-400 pb-3 pt-4 flex-1" href="#">
+<p class="text-sm font-medium">7 jours</p>
+</a>
+<a class="flex flex-col items-center justify-center border-b-2 border-transparent text-slate-500 dark:text-slate-400 pb-3 pt-4 flex-1" href="#">
+<p class="text-sm font-medium">Terrain</p>
+</a>
+<a class="flex flex-col items-center justify-center border-b-2 border-transparent text-slate-500 dark:text-slate-400 pb-3 pt-4 flex-1" href="#">
+<p class="text-sm font-medium">Espèces</p>
+</a>
+</div>
+</div>
+<!-- Main Content Area -->
+<main class="flex-1 overflow-y-auto p-4 space-y-6 pb-24">
+<!-- Gauge Section -->
+<div class="flex flex-col items-center justify-center pt-4">
+<div class="relative size-48 flex items-center justify-center">
+<svg class="size-full -rotate-90" viewbox="0 0 100 100">
+<!-- Background Circle -->
+<circle class="text-forest-neutral/40" cx="50" cy="50" fill="transparent" r="45" stroke="currentColor" stroke-width="8"></circle>
+<!-- Progress Circle -->
+<circle class="text-forest-success" cx="50" cy="50" fill="transparent" r="45" stroke="currentColor" stroke-dasharray="282.7" stroke-dashoffset="79.1" stroke-linecap="round" stroke-width="8"></circle>
+</svg>
+<div class="absolute flex flex-col items-center justify-center">
+<span class="text-4xl font-bold text-slate-900 dark:text-slate-100">72<span class="text-xl font-normal text-slate-500">/100</span></span>
+</div>
+</div>
+<div class="mt-4 flex items-center gap-2 px-4 py-1.5 bg-forest-success/20 text-forest-success rounded-full border border-forest-success/30">
+<span class="text-sm font-bold">Favorable 🍄</span>
+</div>
+<div class="mt-2 text-forest-success text-sm font-medium">
+<span class="material-symbols-outlined align-middle text-xs">keyboard_double_arrow_up</span> Terrain bonus: +8 pts
+                </div>
+</div>
+<!-- Weather Factors Grid -->
+<section>
+<h3 class="text-slate-900 dark:text-slate-200 text-sm font-bold uppercase tracking-widest mb-3 px-1">Facteurs Météo</h3>
+<div class="grid grid-cols-2 gap-3">
+<!-- Rain 14d -->
+<div class="bg-forest-neutral/30 dark:bg-forest-neutral/40 p-3 rounded-xl border border-forest-neutral/20">
+<div class="flex justify-between items-start mb-1">
+<span class="text-xs text-slate-400">Pluie 14j</span>
+<span class="text-[10px] font-bold px-1.5 py-0.5 bg-forest-success/20 text-forest-success rounded">++</span>
+</div>
+<div class="text-lg font-bold mb-2">45mm</div>
+<div class="w-full bg-forest-neutral/50 h-1.5 rounded-full overflow-hidden">
+<div class="bg-forest-success h-full" style="width: 75%;"></div>
+</div>
+</div>
+<!-- Rain 3d -->
+<div class="bg-forest-neutral/30 dark:bg-forest-neutral/40 p-3 rounded-xl border border-forest-neutral/20">
+<div class="flex justify-between items-start mb-1">
+<span class="text-xs text-slate-400">Pluie 3j</span>
+<span class="text-[10px] font-bold px-1.5 py-0.5 bg-forest-success/20 text-forest-success rounded">+</span>
+</div>
+<div class="text-lg font-bold mb-2">12mm</div>
+<div class="w-full bg-forest-neutral/50 h-1.5 rounded-full overflow-hidden">
+<div class="bg-forest-success h-full" style="width: 40%;"></div>
+</div>
+</div>
+<!-- Temp -->
+<div class="bg-forest-neutral/30 dark:bg-forest-neutral/40 p-3 rounded-xl border border-forest-neutral/20">
+<div class="flex justify-between items-start mb-1">
+<span class="text-xs text-slate-400">Température</span>
+<span class="text-[10px] font-bold px-1.5 py-0.5 bg-forest-success/20 text-forest-success rounded">++</span>
+</div>
+<div class="text-lg font-bold mb-2">14°C</div>
+<div class="w-full bg-forest-neutral/50 h-1.5 rounded-full overflow-hidden">
+<div class="bg-forest-success h-full" style="width: 65%;"></div>
+</div>
+</div>
+<!-- Amplitude -->
+<div class="bg-forest-neutral/30 dark:bg-forest-neutral/40 p-3 rounded-xl border border-forest-neutral/20">
+<div class="flex justify-between items-start mb-1">
+<span class="text-xs text-slate-400">Amplitude</span>
+<span class="text-[10px] font-bold px-1.5 py-0.5 bg-forest-success/20 text-forest-success rounded">+</span>
+</div>
+<div class="text-lg font-bold mb-2">10°C</div>
+<div class="w-full bg-forest-neutral/50 h-1.5 rounded-full overflow-hidden">
+<div class="bg-forest-success h-full" style="width: 50%;"></div>
+</div>
+</div>
+<!-- Season -->
+<div class="col-span-2 bg-forest-neutral/30 dark:bg-forest-neutral/40 p-3 rounded-xl border border-forest-neutral/20 flex items-center justify-between">
+<div>
+<span class="text-xs text-slate-400 block">Saisonnalité</span>
+<span class="text-lg font-bold">Automne</span>
+</div>
+<div class="flex items-center gap-4">
+<span class="text-[10px] font-bold px-2 py-1 bg-forest-success/20 text-forest-success rounded">++ Impact</span>
+<div class="w-24 bg-forest-neutral/50 h-1.5 rounded-full overflow-hidden">
+<div class="bg-forest-success h-full" style="width: 90%;"></div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Advice Card -->
+<section class="bg-primary/10 border border-primary/20 p-4 rounded-xl">
+<div class="flex gap-3">
+<span class="material-symbols-outlined text-primary">lightbulb</span>
+<p class="text-sm leading-relaxed text-slate-700 dark:text-slate-300">
+                        Le sol est actuellement très humide suite aux pluies récentes. Privilégiez les zones de lisière exposées sud-est pour trouver les premiers cèpes de Bordeaux.
+                    </p>
+</div>
+</section>
+<!-- Alerts Banner -->
+<section>
+<h3 class="text-slate-900 dark:text-slate-200 text-sm font-bold uppercase tracking-widest mb-3 px-1">Alertes Espèces</h3>
+<div class="flex gap-3 overflow-x-auto hide-scrollbar pb-2">
+<div class="flex-shrink-0 w-32 bg-forest-neutral/40 p-3 rounded-xl border border-primary/30">
+<div class="size-10 bg-forest-neutral/60 rounded-lg mb-2 flex items-center justify-center">🍄</div>
+<p class="text-xs font-bold text-slate-100">Cèpe de B.</p>
+<p class="text-[10px] text-primary">Pic imminent</p>
+</div>
+<div class="flex-shrink-0 w-32 bg-forest-neutral/40 p-3 rounded-xl border border-forest-neutral/20">
+<div class="size-10 bg-forest-neutral/60 rounded-lg mb-2 flex items-center justify-center">🌲</div>
+<p class="text-xs font-bold text-slate-100">Chanterelle</p>
+<p class="text-[10px] text-slate-400">En cours</p>
+</div>
+<div class="flex-shrink-0 w-32 bg-forest-neutral/40 p-3 rounded-xl border border-forest-neutral/20">
+<div class="size-10 bg-forest-neutral/60 rounded-lg mb-2 flex items-center justify-center">🍂</div>
+<p class="text-xs font-bold text-slate-100">Trompette</p>
+<p class="text-[10px] text-slate-400">Début saison</p>
+</div>
+</div>
+</section>
+</main>
+<!-- Bottom Navigation Bar -->
+<nav class="fixed bottom-0 w-full max-w-[390px] flex gap-2 border-t border-forest-neutral/30 bg-background-light dark:bg-background-dark/95 backdrop-blur-md px-4 pb-6 pt-2 z-20">
+<a class="flex flex-1 flex-col items-center justify-end gap-1 text-slate-400" href="#">
+<span class="material-symbols-outlined">explore</span>
+<p class="text-[10px] font-medium leading-normal tracking-wide">Explorer</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-end gap-1 text-primary" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">analytics</span>
+<p class="text-[10px] font-bold leading-normal tracking-wide">Score</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-end gap-1 text-slate-400" href="#">
+<span class="material-symbols-outlined">favorite</span>
+<p class="text-[10px] font-medium leading-normal tracking-wide">Favoris</p>
+</a>
+<a class="flex flex-1 flex-col items-center justify-end gap-1 text-slate-400" href="#">
+<span class="material-symbols-outlined">person</span>
+<p class="text-[10px] font-medium leading-normal tracking-wide">Profil</p>
+</a>
+</nav>
+</div>
+</body></html>

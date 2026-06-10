@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>ChampIndex Icon Set</title>
+<!-- Tailwind CSS v3 with Plugins -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- BEGIN: Tailwind Configuration -->
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'forest-dark': '#1a2215',
+            'forest-tile': '#232d1d',
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+          },
+        }
+      }
+    }
+  </script>
+<!-- END: Tailwind Configuration -->
+<!-- BEGIN: Custom Styles -->
+<style data-purpose="base-layout">
+    body {
+      background-color: #1a2215;
+      color: #ffffff;
+      -webkit-font-smoothing: antialiased;
+    }
+    .icon-tile {
+      aspect-ratio: 1 / 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  </style>
+<style data-purpose="typography">
+    .label-text {
+      font-size: 0.75rem;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      font-weight: 500;
+      color: rgba(255, 255, 255, 0.7);
+    }
+  </style>
+<!-- END: Custom Styles -->
+</head>
+<body class="min-h-screen p-6 sm:p-12">
+<!-- BEGIN: MainHeader -->
+<header class="mb-12 text-center" data-purpose="page-header">
+<h1 class="text-2xl font-bold tracking-tight mb-2">ChampIndex Icon Set</h1>
+<p class="text-sm opacity-60">Design System • Monoline v1.0</p>
+</header>
+<!-- END: MainHeader -->
+<!-- BEGIN: IconGrid -->
+<main class="max-w-md mx-auto" data-purpose="icon-showcase">
+<div class="grid grid-cols-3 gap-6">
+<!-- Icon 1: Mushroom -->
+<div class="flex flex-col items-center gap-3">
+<div class="icon-tile w-full bg-forest-tile rounded-2xl border border-white/5" data-purpose="icon-container">
+<svg fill="none" height="32" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="32">
+<path d="M12 21v-8M7 13s0-8 5-8 5 8 5 8H7Z"></path>
+<path d="M12 5c-5 0-9 4-9 8h18c0-4-4-8-9-8Z"></path>
+</svg>
+</div>
+<span class="label-text">Mushroom</span>
+</div>
+<!-- Icon 2: Plant -->
+<div class="flex flex-col items-center gap-3">
+<div class="icon-tile w-full bg-forest-tile rounded-2xl border border-white/5" data-purpose="icon-container">
+<svg fill="none" height="32" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="32">
+<path d="M11 20a7 7 0 0 1-7-7c0-3.87 3.13-7 7-7 2.33 0 4.4 1.13 5.7 2.87L20 12"></path>
+<path d="M11 6c2.5 0 5 2 5 6v8"></path>
+<path d="M16 12s2-4 5-4"></path>
+</svg>
+</div>
+<span class="label-text">Plant</span>
+</div>
+<!-- Icon 3: Berry -->
+<div class="flex flex-col items-center gap-3">
+<div class="icon-tile w-full bg-forest-tile rounded-2xl border border-white/5" data-purpose="icon-container">
+<svg fill="none" height="32" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="32">
+<path d="M12 4v4"></path>
+<circle cx="9" cy="11" r="3"></circle>
+<circle cx="15" cy="11" r="3"></circle>
+<circle cx="12" cy="17" r="3"></circle>
+</svg>
+</div>
+<span class="label-text">Berry</span>
+</div>
+<!-- Icon 4: Forest -->
+<div class="flex flex-col items-center gap-3">
+<div class="icon-tile w-full bg-forest-tile rounded-2xl border border-white/5" data-purpose="icon-container">
+<svg fill="none" height="32" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="32">
+<path d="m12 3 4 5h-3v4h4l-5 6h3l-5 4-5-4h3l-5-6h4V8H8l4-5Z"></path>
+</svg>
+</div>
+<span class="label-text">Forest</span>
+</div>
+<!-- Icon 5: Location -->
+<div class="flex flex-col items-center gap-3">
+<div class="icon-tile w-full bg-forest-tile rounded-2xl border border-white/5" data-purpose="icon-container">
+<svg fill="none" height="32" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="32">
+<path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"></path>
+<path d="M12 13a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"></path>
+<path d="M12 10l1.5-1.5"></path>
+</svg>
+</div>
+<span class="label-text">Location</span>
+</div>
+<!-- Icon 6: Compass -->
+<div class="flex flex-col items-center gap-3">
+<div class="icon-tile w-full bg-forest-tile rounded-2xl border border-white/5" data-purpose="icon-container">
+<svg fill="none" height="32" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="32">
+<circle cx="12" cy="12" r="10"></circle>
+<path d="m16.24 7.76-2.12 6.36-6.36 2.12 2.12-6.36 6.36-2.12Z"></path>
+</svg>
+</div>
+<span class="label-text">Compass</span>
+</div>
+<!-- Icon 7: Camera -->
+<div class="flex flex-col items-center gap-3">
+<div class="icon-tile w-full bg-forest-tile rounded-2xl border border-white/5" data-purpose="icon-container">
+<svg fill="none" height="32" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="32">
+<path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3Z"></path>
+<circle cx="12" cy="13" r="3"></circle>
+<path d="M14 11s1-1.5 2-1"></path>
+</svg>
+</div>
+<span class="label-text">Camera</span>
+</div>
+<!-- Icon 8: Notebook -->
+<div class="flex flex-col items-center gap-3">
+<div class="icon-tile w-full bg-forest-tile rounded-2xl border border-white/5" data-purpose="icon-container">
+<svg fill="none" height="32" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="32">
+<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+<path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"></path>
+<path d="M8 7h8"></path>
+<path d="M8 11h8"></path>
+</svg>
+</div>
+<span class="label-text">Notebook</span>
+</div>
+<!-- Icon 9: Weather -->
+<div class="flex flex-col items-center gap-3">
+<div class="icon-tile w-full bg-forest-tile rounded-2xl border border-white/5" data-purpose="icon-container">
+<svg fill="none" height="32" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="32">
+<path d="M12 2v2"></path>
+<path d="m4.93 4.93 1.41 1.41"></path>
+<path d="M20 12h2"></path>
+<path d="m19.07 4.93-1.41 1.41"></path>
+<path d="M15.947 12.65a4 4 0 0 0-5.925-4.128"></path>
+<path d="M13 22v-2"></path>
+<path d="M9 22v-2"></path>
+<path d="M17 22v-2"></path>
+<path d="M20 17.58A5 5 0 0 0 18 8h-1.26A8 8 0 1 0 4 16.25"></path>
+</svg>
+</div>
+<span class="label-text">Weather</span>
+</div>
+<!-- Icon 10: Alert -->
+<div class="flex flex-col items-center gap-3">
+<div class="icon-tile w-full bg-forest-tile rounded-2xl border border-white/5" data-purpose="icon-container">
+<svg fill="none" height="32" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="32">
+<path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path>
+<path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path>
+<path d="M12 7v3"></path>
+<path d="M12 13h.01"></path>
+</svg>
+</div>
+<span class="label-text">Alert</span>
+</div>
+<!-- Icon 11: Heart -->
+<div class="flex flex-col items-center gap-3">
+<div class="icon-tile w-full bg-forest-tile rounded-2xl border border-white/5" data-purpose="icon-container">
+<svg fill="none" height="32" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="32">
+<path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"></path>
+</svg>
+</div>
+<span class="label-text">Heart</span>
+</div>
+<!-- Icon 12: Danger -->
+<div class="flex flex-col items-center gap-3">
+<div class="icon-tile w-full bg-forest-tile rounded-2xl border border-white/5" data-purpose="icon-container">
+<svg fill="none" height="32" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="32">
+<circle cx="12" cy="9" r="6"></circle>
+<path d="M9 14v3h6v-3"></path>
+<path d="m3 21 18-18"></path>
+<path d="m3 3 18 18"></path>
+</svg>
+</div>
+<span class="label-text">Danger</span>
+</div>
+</div>
+</main>
+<!-- END: IconGrid -->
+<!-- BEGIN: Footer -->
+<footer class="mt-16 text-center text-xs opacity-40 uppercase tracking-widest" data-purpose="footer">
+    ChampIndex App Core Assets © 2023
+  </footer>
+<!-- END: Footer -->
+</body></html>
