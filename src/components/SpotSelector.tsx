@@ -2,9 +2,11 @@
 // ChampIndex — Écran d'accueil (design inspiré Stitch)
 // ============================================================
 
+import { useMemo, useState } from 'react';
 import type { Spot, ForagingCategory } from '../types';
+import type { WeatherAlert } from '../lib/weather-alerts-db';
 import { SPOTS } from '../lib/species-db';
-import { SeasonalAlertBanner } from './AlertBanner';
+import { getSeasonalAlerts } from '../lib/alert-engine';
 import NotificationSettings from './NotificationSettings';
 import { IconMushroom, IconPlant, IconBerry, IconLogo } from './Icons';
 
@@ -13,6 +15,54 @@ const CATEGORIES: { id: ForagingCategory; Icon: React.FC<{size?: number; classNa
   { id: 'plant', Icon: IconPlant, label: 'Plantes', activeClass: 'bg-blue-600 text-white shadow-lg', hoverClass: 'hover:bg-blue-900/20 text-blue-300' },
   { id: 'berry', Icon: IconBerry, label: 'Baies', activeClass: 'bg-purple-600 text-white shadow-lg', hoverClass: 'hover:bg-purple-900/20 text-purple-300' },
 ];
+
+// ── Cartes saisonnières « À surveiller ce mois-ci » ──
+
+const RELIABILITY_STYLES: Record<WeatherAlert['reliability'], { bg: string; border: string; chip: string; label: string }> = {
+  high: { bg: 'bg-emerald-900/40', border: 'border-emerald-500/30', chip: 'bg-emerald-500/15 text-emerald-300', label: 'Fiable' },
+  medium: { bg: 'bg-amber-900/30', border: 'border-amber-500/25', chip: 'bg-amber-500/15 text-amber-300', label: 'Probable' },
+  low: { bg: 'bg-white/5', border: 'border-white/10', chip: 'bg-white/10 text-white/50', label: 'Possible' },
+};
+
+function SeasonalCard({ alert }: { alert: WeatherAlert }) {
+  const [expanded, setExpanded] = useState(false);
+  const style = RELIABILITY_STYLES[alert.reliability];
+
+  return (
+    <button
+      onClick={() => setExpanded(!expanded)}
+      className={`flex-shrink-0 w-[240px] rounded-2xl ${style.bg} border ${style.border}
+        p-3.5 text-left snap-start transition-all active:scale-[0.98]`}
+    >
+      <div className="flex items-start gap-3">
+        {/* Pastille icône à gauche */}
+        <span className="flex-shrink-0 w-9 h-9 rounded-full bg-black/25 border border-white/10 flex items-center justify-center text-base">
+          🍄
+        </span>
+        <div className="min-w-0">
+          <p className="text-xs font-bold text-emerald-50 leading-tight truncate">{alert.targetSpecies}</p>
+          <p className="text-[11px] text-white/65 leading-snug mt-1">{alert.appMessage}</p>
+        </div>
+      </div>
+
+      {/* Détails au tap */}
+      {expanded && (
+        <div className="mt-2.5 pt-2.5 border-t border-white/10 space-y-1">
+          <p className="text-[10px] text-white/50">📍 {alert.whereToLook}</p>
+          <p className="text-[10px] text-white/40">📅 {alert.period}</p>
+          <p className="text-[10px] text-white/40 italic">{alert.condition}</p>
+          <span className={`inline-block text-[9px] px-1.5 py-0.5 rounded-full font-medium ${style.chip}`}>
+            {style.label}
+          </span>
+        </div>
+      )}
+    </button>
+  );
+}
+
+// ── Icônes alternées des spots (comme la maquette) ──
+
+const TREE_ICONS = ['🌲', '🌳', '🌲', '🌿'];
 
 interface SpotSelectorProps {
   onSelectSpot: (spot: Spot) => void;
@@ -31,11 +81,16 @@ export default function SpotSelector({
   onSelectSpot,
   onUsePosition,
   onOpenHeatmap,
+  onOpenHabitats,
+  onOpenNotebook,
+  onOpenIdentify,
   geoLoading,
   geoError,
   selectedCategory,
   onChangeCategory,
 }: SpotSelectorProps) {
+  const seasonalAlerts = useMemo(() => getSeasonalAlerts(), []);
+
   return (
     <div className="min-h-screen flex flex-col items-center px-5 py-8 animate-fade-in">
       {/* Logo & titre */}
@@ -98,39 +153,81 @@ export default function SpotSelector({
           <p className="text-xs text-red-400 text-center">{geoError}</p>
         )}
 
-        {/* Bouton carte */}
-        <button
-          onClick={onOpenHeatmap}
-          className="w-full py-3.5 px-6 rounded-2xl font-semibold text-white text-sm
-            bg-[#2a3524] border border-[#3e5235]
-            hover:bg-[#3e5235] active:scale-95 transition-all
-            flex items-center justify-center gap-2"
-        >
-          <span className="material-symbols-outlined text-lg">map</span>
-          Carte de France en temps réel
-        </button>
+        {/* CTA Identification photo — ambre/orange (Stitch) */}
+        {onOpenIdentify && (
+          <button
+            onClick={onOpenIdentify}
+            className="w-full py-4 px-6 rounded-2xl font-bold text-white
+              bg-gradient-to-r from-amber-600 to-orange-700
+              flex items-center justify-center gap-3
+              shadow-lg active:scale-95 transition-transform"
+          >
+            <span className="material-symbols-outlined text-lg">photo_camera</span>
+            Identifier une espèce (photo)
+          </button>
+        )}
+
+        {/* Rangée de 3 boutons compacts : Carte · Habitats · Carnet */}
+        <div className="grid grid-cols-3 gap-3">
+          <button
+            onClick={onOpenHeatmap}
+            className="min-h-[60px] flex flex-col items-center justify-center py-3 rounded-2xl
+              text-white bg-[#2a3524] border border-[#3e5235]
+              hover:bg-[#3e5235] active:scale-95 transition-all"
+          >
+            <span className="material-symbols-outlined text-xl mb-1">map</span>
+            <span className="text-[10px] uppercase tracking-wider font-bold opacity-80">Carte</span>
+          </button>
+          <button
+            onClick={() => onOpenHabitats?.()}
+            className="min-h-[60px] flex flex-col items-center justify-center py-3 rounded-2xl
+              text-white bg-[#2a3524] border border-[#3e5235]
+              hover:bg-[#3e5235] active:scale-95 transition-all"
+          >
+            <span className="material-symbols-outlined text-xl mb-1">forest</span>
+            <span className="text-[10px] uppercase tracking-wider font-bold opacity-80">Habitats</span>
+          </button>
+          <button
+            onClick={() => onOpenNotebook?.()}
+            className="min-h-[60px] flex flex-col items-center justify-center py-3 rounded-2xl
+              text-white bg-[#2a3524] border border-[#3e5235]
+              hover:bg-[#3e5235] active:scale-95 transition-all"
+          >
+            <span className="material-symbols-outlined text-xl mb-1">menu_book</span>
+            <span className="text-[10px] uppercase tracking-wider font-bold opacity-80">Carnet</span>
+          </button>
+        </div>
       </section>
 
       {/* Alertes saisonnières */}
-      <section className="w-full max-w-sm mt-8">
-        <SeasonalAlertBanner />
-      </section>
+      {seasonalAlerts.length > 0 && (
+        <section className="w-full max-w-sm mt-8">
+          <h2 className="text-sm font-bold uppercase tracking-widest text-emerald-500/80 px-1 mb-3">
+            À surveiller ce mois-ci
+          </h2>
+          <div className="flex gap-3 overflow-x-auto scrollbar-hide snap-x snap-mandatory pb-2 -mx-5 px-5">
+            {seasonalAlerts.map((alert) => (
+              <SeasonalCard key={alert.id} alert={alert} />
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* Spots forestiers */}
       <section className="w-full max-w-sm mt-8">
         <h2 className="text-sm font-bold uppercase tracking-widest text-emerald-500/80 px-1 mb-3">
           Spots forestiers
         </h2>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-2 gap-3.5">
           {SPOTS.map((spot, i) => (
             <button
               key={spot.name}
               onClick={() => onSelectSpot(spot)}
-              className="stagger-child press-scale p-4 rounded-2xl bg-white/[0.04] border border-white/5
-                hover:bg-white/[0.08] hover:border-white/10 text-left flex items-start gap-3"
+              className="stagger-child press-scale p-4 rounded-2xl bg-[#2a3524]/60 border border-white/5
+                hover:bg-[#2a3524] hover:border-white/10 text-left flex items-start gap-3"
               style={{ animationDelay: `${i * 40}ms` }}
             >
-              <span className="text-lg">🌲</span>
+              <span className="text-lg">{TREE_ICONS[i % TREE_ICONS.length]}</span>
               <div>
                 <p className="text-sm font-bold text-white leading-tight">{spot.name.replace('Forêt de ', '').replace('Forêt des ', '').replace('Massif des ', '')}</p>
                 <p className="text-[10px] text-emerald-500 mt-1 uppercase font-medium tracking-wide">{spot.region}</p>
@@ -146,7 +243,10 @@ export default function SpotSelector({
       </section>
 
       {/* Footer */}
-      <footer className="mt-8 mb-4 text-center">
+      <footer className="w-full max-w-sm mt-10 mb-4 pt-6 border-t border-emerald-900/30 text-center space-y-1.5">
+        <p className="text-[10px] text-emerald-100/30 uppercase tracking-[0.2em] font-medium">
+          © ChampIndex — Cueillez avec responsabilité
+        </p>
         <p className="text-[10px] text-white/20 uppercase tracking-[0.15em]">
           Données : Open-Meteo · IGN · OpenStreetMap
         </p>

@@ -35,6 +35,16 @@ const ORGANS: { id: PlantOrgan; emoji: string; label: string }[] = [
   { id: 'habit', emoji: '🌳', label: 'Plante entière' },
 ];
 
+// ── Conseils photo ──
+
+const PHOTO_TIPS: { icon: string; text: string }[] = [
+  { icon: 'center_focus_strong', text: 'Photographiez de près, bien centré' },
+  { icon: 'light_mode', text: 'Bonne luminosité, pas de flash' },
+  { icon: 'swap_vert', text: 'Champignons : dessus ET dessous du chapeau' },
+  { icon: 'eco', text: 'Plantes : feuilles ou fleurs bien visibles' },
+  { icon: 'filter_1', text: 'Une seule espèce par photo' },
+];
+
 // ── Carte résultat ──
 
 function ResultCard({
@@ -55,10 +65,10 @@ function ResultCard({
 
   return (
     <div className={`rounded-2xl overflow-hidden ${
-      isDeadly ? 'border-2 border-red-500/50' : isToxic ? 'border border-amber-500/30' : 'border border-white/10'
-    } bg-white/5`}>
+      isDeadly ? 'border-2 border-red-500/60' : isToxic ? 'border border-amber-500/40' : 'border border-[#3d4d35]'
+    } bg-[#232e1c] shadow-lg`}>
       {isDeadly && (
-        <div className="bg-red-700/80 px-4 py-2.5 flex items-center gap-2">
+        <div className="bg-red-700/90 px-4 py-2.5 flex items-center gap-2.5">
           <span className="text-lg">☠️</span>
           <div>
             <p className="text-xs font-bold text-white">ESPÈCE POTENTIELLEMENT MORTELLE</p>
@@ -68,9 +78,9 @@ function ResultCard({
       )}
 
       {isToxic && !isDeadly && (
-        <div className="bg-amber-800/60 px-4 py-2 flex items-center gap-2">
+        <div className="bg-amber-800/70 px-4 py-2 flex items-center gap-2">
           <span className="text-sm">⚠️</span>
-          <p className="text-[11px] font-medium text-amber-200">Espèce possiblement toxique</p>
+          <p className="text-[11px] font-bold text-amber-200">Espèce possiblement toxique</p>
         </div>
       )}
 
@@ -79,13 +89,13 @@ function ResultCard({
           <div className="flex-shrink-0 relative">
             {result.images?.[0]?.url?.m ? (
               <img src={result.images[0].url.m} alt={commonName}
-                className="w-14 h-14 rounded-xl object-cover" />
+                className="w-14 h-14 rounded-xl object-cover border border-white/10" />
             ) : (
-              <div className="w-14 h-14 rounded-xl bg-white/10 flex items-center justify-center text-2xl">
+              <div className="w-14 h-14 rounded-xl bg-[#2a3523] border border-[#3d4d35] flex items-center justify-center text-2xl">
                 {localMatch?.emoji || '🌱'}
               </div>
             )}
-            <span className="absolute -top-1 -left-1 w-5 h-5 rounded-full bg-white/20 text-[10px] font-bold text-white flex items-center justify-center">
+            <span className="absolute -top-1.5 -left-1.5 w-5 h-5 rounded-full bg-amber-500 text-[10px] font-bold text-[#1a2215] flex items-center justify-center shadow">
               {rank}
             </span>
           </div>
@@ -99,7 +109,7 @@ function ResultCard({
             {localMatch && (
               <div className="mt-1.5 flex items-center gap-1.5">
                 <span className="text-sm">{localMatch.emoji}</span>
-                <span className="text-[11px] text-emerald-400/80 font-medium">
+                <span className="text-[11px] text-[#4ade80]/90 font-medium">
                   Dans notre base : {localMatch.nom}
                 </span>
               </div>
@@ -118,7 +128,7 @@ function ResultCard({
               <div className="flex gap-2 overflow-x-auto scrollbar-hide">
                 {result.images.slice(0, 5).map((img, i) => (
                   <img key={i} src={img.url.m} alt={`${commonName} ${i + 1}`}
-                    className="w-20 h-20 rounded-lg object-cover flex-shrink-0" />
+                    className="w-20 h-20 rounded-xl object-cover flex-shrink-0 border border-white/10" />
                 ))}
               </div>
             )}
@@ -133,11 +143,11 @@ function ResultCard({
                 )}
                 {localMatch.confusions.length > 0 && (
                   <div className="space-y-1">
-                    <p className="text-[10px] text-white/40 uppercase tracking-wider">Confusions possibles</p>
+                    <p className="text-[10px] text-gray-400 uppercase tracking-wider font-semibold">Confusions possibles</p>
                     {localMatch.confusions.map((c, i) => (
                       <div key={i} className={`rounded-lg p-2 text-[11px] ${
-                        c.danger === 'mortel' ? 'bg-red-500/10 text-red-300'
-                        : c.danger === 'toxique' ? 'bg-amber-500/10 text-amber-300'
+                        c.danger === 'mortel' ? 'bg-red-500/10 border border-red-500/20 text-red-300'
+                        : c.danger === 'toxique' ? 'bg-amber-500/10 border border-amber-500/20 text-amber-300'
                         : 'bg-white/5 text-white/50'
                       }`}>
                         {c.danger === 'mortel' ? '☠️' : c.danger === 'toxique' ? '⚠️' : 'ℹ️'} {c.espece}
@@ -147,7 +157,7 @@ function ResultCard({
                   </div>
                 )}
                 {localMatch.avertissement && (
-                  <div className="rounded-lg bg-red-900/30 border border-red-500/20 p-2">
+                  <div className="rounded-lg bg-red-900/30 border border-red-500/30 p-2">
                     <p className="text-xs text-red-300">⚠️ {localMatch.avertissement}</p>
                   </div>
                 )}
@@ -167,10 +177,11 @@ function ResultCard({
       {localMatch && onViewSpecies && (
         <button
           onClick={(e) => { e.stopPropagation(); onViewSpecies(localMatch); }}
-          className="w-full py-2.5 border-t border-white/5 text-xs font-medium text-emerald-400
-            hover:bg-emerald-700/20 transition-colors"
+          className="w-full min-h-[44px] py-3 border-t border-white/10 text-xs font-semibold text-[#4ade80]
+            hover:bg-emerald-700/20 transition-colors flex items-center justify-center gap-1.5"
         >
-          📋 Voir la fiche complète de {localMatch.nom}
+          <span className="material-symbols-outlined text-base" aria-hidden="true">description</span>
+          Voir la fiche complète de {localMatch.nom}
         </button>
       )}
     </div>
@@ -223,49 +234,55 @@ export default function PlantIdentifier({ onBack, onViewSpecies }: PlantIdentifi
 
   return (
     <div className="min-h-screen flex flex-col">
-      <header className="px-4 py-3 flex items-center justify-between border-b border-white/5">
-        <button onClick={onBack}
-          className="px-3 py-1.5 rounded-lg text-xs font-medium text-white/70 bg-white/5 hover:bg-white/10 transition-colors">
-          ← Retour
+      {/* Header (Stitch style) */}
+      <header className="sticky top-0 z-10 bg-[#1a2215]/95 backdrop-blur-md border-b border-white/10 px-4 pt-6 pb-4 flex items-center justify-between">
+        <button onClick={onBack} aria-label="Retour"
+          className="w-11 h-11 flex items-center justify-center rounded-full bg-white/5 hover:bg-white/10 transition-colors">
+          <span className="material-symbols-outlined text-xl">arrow_back</span>
         </button>
-        <h2 className="text-lg font-bold text-white/90" style={{ fontFamily: 'Playfair Display, serif' }}>
-          Identifier
-        </h2>
+        <h2 className="text-xl font-bold tracking-tight">Identifier</h2>
         {remaining !== null ? (
-          <span className="text-[10px] text-white/30">{remaining} id. restantes</span>
+          <span className="bg-[#2a3523] px-3 py-1 rounded-full text-xs font-medium text-white/80 border border-[#3d4d35]">
+            {remaining} scans restants
+          </span>
         ) : (
-          <span className="w-16" />
+          <div className="w-11" />
         )}
       </header>
 
-      <main className="flex-1 overflow-y-auto px-4 py-4">
-        {/* Disclaimer */}
-        <div className="bg-red-900/30 border border-red-500/20 rounded-xl p-3 mb-4">
-          <p className="text-xs text-red-300 leading-relaxed text-center font-medium">
-            ⚠️ L'identification par IA est INDICATIVE uniquement.
-          </p>
-          <p className="text-[10px] text-red-200/70 leading-relaxed text-center mt-1">
-            Ne consommez JAMAIS une espèce identifiée uniquement par cette app.
-            Faites TOUJOURS vérifier par un pharmacien ou un mycologue.
-            Une erreur d'identification peut être MORTELLE.
-          </p>
+      <main className="flex-1 overflow-y-auto px-4 py-5">
+        {/* Disclaimer sécurité */}
+        <div className="bg-red-900/30 border border-red-500/50 rounded-xl p-4 mb-6 flex items-start gap-3">
+          <span className="material-symbols-outlined text-red-400 text-xl flex-shrink-0" aria-hidden="true">warning</span>
+          <div>
+            <p className="text-xs text-red-200 leading-relaxed">
+              L'identification par IA est <span className="font-bold">INDICATIVE</span> uniquement.
+              Ne consommez <span className="font-bold">JAMAIS</span> sans l'avis d'un expert.
+            </p>
+            <p className="text-[11px] text-red-200/80 leading-relaxed mt-1">
+              Faites <span className="font-bold">TOUJOURS</span> vérifier par un pharmacien ou un mycologue.
+              Une erreur d'identification peut être <span className="font-bold">MORTELLE</span>.
+            </p>
+          </div>
         </div>
 
         {!imagePreview ? (
-          <div className="space-y-3">
+          <div className="flex flex-col">
+            {/* Grande zone de capture (bordure pointillée émeraude) */}
             <button onClick={() => cameraInputRef.current?.click()}
-              className="w-full py-8 rounded-2xl bg-emerald-700/20 border-2 border-dashed border-emerald-500/30
-                hover:bg-emerald-700/30 transition-colors flex flex-col items-center gap-2">
-              <span className="text-4xl">📸</span>
-              <p className="text-sm font-medium text-emerald-300">Prendre une photo</p>
-              <p className="text-[11px] text-white/40">Caméra arrière recommandée</p>
+              className="w-full aspect-square rounded-2xl border-[3px] border-dashed border-[#4ade80]/80
+                bg-[#2a3523]/30 hover:bg-[#2a3523]/50 active:scale-95 transition-all duration-200
+                flex flex-col items-center justify-center gap-4">
+              <span className="material-symbols-outlined text-emerald-300 text-[56px]" aria-hidden="true">photo_camera</span>
+              <span className="text-[#4ade80] font-bold text-lg">Prendre une photo</span>
             </button>
 
+            {/* Accès galerie discret */}
             <button onClick={() => fileInputRef.current?.click()}
-              className="w-full py-4 rounded-2xl bg-white/5 border border-white/10
-                hover:bg-white/10 transition-colors flex items-center justify-center gap-2">
-              <span className="text-lg">🖼️</span>
-              <p className="text-sm text-white/70">Choisir depuis la galerie</p>
+              className="mx-auto mt-4 flex items-center justify-center gap-2 min-h-[44px] px-5
+                text-gray-400 hover:text-white transition-colors">
+              <span className="material-symbols-outlined text-lg" aria-hidden="true">image</span>
+              <span className="text-sm font-medium">Galerie</span>
             </button>
 
             <input ref={cameraInputRef} type="file" accept="image/*" capture="environment" className="hidden"
@@ -273,37 +290,45 @@ export default function PlantIdentifier({ onBack, onViewSpecies }: PlantIdentifi
             <input ref={fileInputRef} type="file" accept="image/*" className="hidden"
               onChange={e => e.target.files?.[0] && handleFile(e.target.files[0])} />
 
-            <div className="bg-white/5 rounded-xl p-3 mt-4">
-              <p className="text-[11px] text-white/50 font-medium mb-2">Conseils pour une bonne identification :</p>
-              <ul className="text-[11px] text-white/40 space-y-1">
-                <li>📐 Photographiez de près, bien centré</li>
-                <li>💡 Bonne luminosité, pas de flash</li>
-                <li>🍄 Champignons : dessus ET dessous du chapeau</li>
-                <li>🌿 Plantes : feuilles ou fleurs bien visibles</li>
-                <li>📏 Une seule espèce par photo</li>
+            {/* Conseils photo */}
+            <div className="bg-[#2a3523] rounded-2xl p-5 border border-[#3d4d35] shadow-lg mt-8">
+              <h3 className="text-sm font-semibold uppercase tracking-wider text-gray-400 mb-4">Conseils photo</h3>
+              <ul className="space-y-4">
+                {PHOTO_TIPS.map((tip, i) => (
+                  <li key={i} className="flex items-start gap-3">
+                    <span className="material-symbols-outlined text-lg leading-none text-emerald-400 flex-shrink-0" aria-hidden="true">
+                      {tip.icon}
+                    </span>
+                    <p className="text-sm text-gray-200">{tip.text}</p>
+                  </li>
+                ))}
               </ul>
             </div>
           </div>
         ) : (
           <div className="space-y-4">
-            <div className="relative rounded-2xl overflow-hidden">
+            <div className="relative rounded-2xl overflow-hidden border border-[#3d4d35] shadow-lg">
               <img src={imagePreview} alt="Photo à identifier" className="w-full max-h-64 object-cover" />
-              <button onClick={handleReset}
-                className="absolute top-2 right-2 w-8 h-8 rounded-full bg-black/60 text-white/80 flex items-center justify-center hover:bg-black/80">
-                &times;
+              <button onClick={handleReset} aria-label="Supprimer la photo"
+                className="absolute top-2 right-2 w-11 h-11 rounded-full bg-black/60 backdrop-blur-sm text-white/90
+                  flex items-center justify-center hover:bg-black/80 transition-colors">
+                <span className="material-symbols-outlined text-xl" aria-hidden="true">close</span>
               </button>
             </div>
 
             {/* Sélecteur organe */}
             <div>
-              <p className="text-[10px] text-white/40 uppercase tracking-wider mb-2">Que montre la photo ?</p>
-              <div className="flex gap-1.5">
+              <p className="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2.5">Que montre la photo ?</p>
+              <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1">
                 {ORGANS.map(o => (
                   <button key={o.id} onClick={() => setOrgan(o.id)}
-                    className={`flex-1 py-2 rounded-xl text-xs font-medium transition-all ${
-                      organ === o.id ? 'bg-emerald-700 text-white' : 'bg-white/5 text-white/50 hover:bg-white/10'
+                    className={`flex items-center gap-1.5 px-4 min-h-[44px] rounded-full text-sm font-medium
+                      whitespace-nowrap transition-all active:scale-95 ${
+                      organ === o.id
+                        ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-900/40'
+                        : 'bg-white/5 text-white/60 hover:bg-white/10 border border-[#3d4d35]'
                     }`}>
-                    {o.emoji} {o.label}
+                    <span aria-hidden="true">{o.emoji}</span> {o.label}
                   </button>
                 ))}
               </div>
@@ -323,12 +348,15 @@ export default function PlantIdentifier({ onBack, onViewSpecies }: PlantIdentifi
                   Identification en cours...
                 </span>
               ) : (
-                '🔍 Identifier cette espèce'
+                <span className="flex items-center justify-center gap-2">
+                  <span className="material-symbols-outlined text-xl" aria-hidden="true">search</span>
+                  Identifier cette espèce
+                </span>
               )}
             </button>
 
             {error && (
-              <div className="bg-red-900/30 border border-red-500/20 rounded-xl p-3">
+              <div className="bg-red-900/30 border border-red-500/40 rounded-xl p-3">
                 <p className="text-xs text-red-300 text-center">{error}</p>
               </div>
             )}
@@ -339,7 +367,9 @@ export default function PlantIdentifier({ onBack, onViewSpecies }: PlantIdentifi
                   <p className="text-sm font-semibold text-white/90">
                     {results.length > 0 ? `${results.length} résultat${results.length > 1 ? 's' : ''}` : 'Aucun résultat'}
                   </p>
-                  <button onClick={handleReset} className="text-xs text-amber-400 hover:text-amber-300">
+                  <button onClick={handleReset}
+                    className="flex items-center gap-1 min-h-[44px] px-2 text-xs font-medium text-amber-400 hover:text-amber-300 transition-colors">
+                    <span className="material-symbols-outlined text-base" aria-hidden="true">refresh</span>
                     Nouvelle photo
                   </button>
                 </div>
@@ -356,10 +386,11 @@ export default function PlantIdentifier({ onBack, onViewSpecies }: PlantIdentifi
                   <ResultCard key={i} result={r} rank={i + 1} onViewSpecies={onViewSpecies} />
                 ))}
 
-                <div className="bg-red-900/30 border border-red-500/20 rounded-xl p-3 mt-2">
-                  <p className="text-[11px] text-red-300 text-center leading-relaxed">
-                    ☠️ RAPPEL : ces résultats sont des SUGGESTIONS algorithmiques.
-                    Ne consommez RIEN sans vérification par un expert.
+                <div className="bg-red-900/30 border border-red-500/50 rounded-xl p-4 mt-2 flex items-start gap-3">
+                  <span className="text-lg flex-shrink-0">☠️</span>
+                  <p className="text-[11px] text-red-200 leading-relaxed">
+                    <span className="font-bold">RAPPEL :</span> ces résultats sont des SUGGESTIONS algorithmiques.
+                    Ne consommez <span className="font-bold">RIEN</span> sans vérification par un expert.
                     Centres antipoison : Paris 01 40 05 48 48 · Lyon 04 72 11 69 11
                   </p>
                 </div>

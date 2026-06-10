@@ -1,5 +1,5 @@
 // ============================================================
-// ChampIndex — Jauge circulaire SVG
+// ChampIndex — Jauge circulaire SVG (anneau de progression)
 // ============================================================
 
 import type { ScoreLevelInfo } from '../types';
@@ -10,97 +10,87 @@ interface ScoreGaugeProps {
   terrainBonus?: number;
 }
 
+// Cercle r=45 dans un viewBox 100×100 → circonférence 2πr
+const RADIUS = 45;
+const CIRCUMFERENCE = 2 * Math.PI * RADIUS; // ≈ 282.74
+
 export default function ScoreGauge({ score, levelInfo, terrainBonus }: ScoreGaugeProps) {
   // Accessibilité : annonce du score
   const ariaLabel = `Score de ${score} sur 100. Niveau : ${levelInfo.label}`;
 
-  // Arc SVG : 240° d'arc (pas cercle complet)
-  const radius = 90;
-  const strokeWidth = 12;
-  const center = 110;
-  const startAngle = 150; // Début en bas-gauche
-  const endAngle = 390;   // Fin en bas-droite (240° d'arc)
-  const totalArc = endAngle - startAngle;
-
-  const scoreAngle = startAngle + (score / 100) * totalArc;
-
-  function polarToCartesian(angle: number) {
-    const rad = (angle * Math.PI) / 180;
-    return {
-      x: center + radius * Math.cos(rad),
-      y: center + radius * Math.sin(rad),
-    };
-  }
-
-  function describeArc(start: number, end: number) {
-    const s = polarToCartesian(start);
-    const e = polarToCartesian(end);
-    const largeArc = end - start > 180 ? 1 : 0;
-    return `M ${s.x} ${s.y} A ${radius} ${radius} 0 ${largeArc} 1 ${e.x} ${e.y}`;
-  }
+  const clamped = Math.max(0, Math.min(100, score));
+  const dashOffset = CIRCUMFERENCE * (1 - clamped / 100);
 
   return (
-    <div className="flex flex-col items-center py-6" role="status" aria-label={ariaLabel}>
-      <svg width="220" height="200" viewBox="0 0 220 200" aria-hidden="true">
-        {/* Fond de la jauge */}
-        <path
-          d={describeArc(startAngle, endAngle)}
-          fill="none"
-          stroke="rgba(255,255,255,0.1)"
-          strokeWidth={strokeWidth}
-          strokeLinecap="round"
-        />
-        {/* Arc coloré */}
-        {score > 0 && (
-          <path
-            d={describeArc(startAngle, scoreAngle)}
-            fill="none"
-            stroke={levelInfo.color}
-            strokeWidth={strokeWidth}
-            strokeLinecap="round"
-            style={{
-              filter: `drop-shadow(0 0 8px ${levelInfo.color}80)`,
-              transition: 'all 1s ease-out',
-            }}
+    <div className="flex flex-col items-center justify-center pt-6 pb-2" role="status" aria-label={ariaLabel}>
+      {/* Anneau de progression */}
+      <div className="relative size-48 flex items-center justify-center">
+        <svg className="size-full -rotate-90" viewBox="0 0 100 100" aria-hidden="true">
+          {/* Cercle de fond */}
+          <circle
+            cx="50"
+            cy="50"
+            r={RADIUS}
+            fill="transparent"
+            stroke="#2d3828"
+            strokeOpacity="0.6"
+            strokeWidth="8"
           />
-        )}
+          {/* Cercle de progression */}
+          {score > 0 && (
+            <circle
+              cx="50"
+              cy="50"
+              r={RADIUS}
+              fill="transparent"
+              stroke={levelInfo.color}
+              strokeWidth="8"
+              strokeLinecap="round"
+              strokeDasharray={CIRCUMFERENCE}
+              strokeDashoffset={dashOffset}
+              style={{
+                transition: 'stroke-dashoffset 1s ease-out',
+                filter: `drop-shadow(0 0 6px ${levelInfo.color}66)`,
+              }}
+            />
+          )}
+        </svg>
         {/* Score au centre */}
-        <text
-          x={center}
-          y={center - 10}
-          textAnchor="middle"
-          className="fill-white"
-          style={{ fontSize: '48px', fontFamily: 'Playfair Display, serif', fontWeight: 700 }}
-        >
-          {score}
-        </text>
-        <text
-          x={center}
-          y={center + 16}
-          textAnchor="middle"
-          className="fill-white/60"
-          style={{ fontSize: '16px' }}
-        >
-          / 100
-        </text>
-      </svg>
+        <div className="absolute flex flex-col items-center justify-center">
+          <span className="text-4xl font-bold text-white">
+            {score}
+            <span className="text-xl font-normal text-white/50">/100</span>
+          </span>
+        </div>
+      </div>
 
-      {/* Badge label + terrain bonus (inspiré maquette Stitch) */}
-      <div className="flex items-center justify-center gap-3 -mt-4">
-        <span
-          className="px-4 py-1.5 rounded-full text-sm font-bold uppercase tracking-wide"
-          style={{ color: levelInfo.color, backgroundColor: `${levelInfo.color}20` }}
-        >
+      {/* Pill niveau (inspiré maquette Stitch) */}
+      <div
+        className="mt-4 flex items-center gap-2 px-4 py-1.5 rounded-full border"
+        style={{
+          color: levelInfo.color,
+          backgroundColor: `${levelInfo.color}20`,
+          borderColor: `${levelInfo.color}4D`,
+        }}
+      >
+        <span className="text-sm font-bold">
           {levelInfo.label} {levelInfo.emoji}
         </span>
-        {terrainBonus !== undefined && terrainBonus !== 0 && (
-          <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${
-            terrainBonus >= 0 ? 'bg-emerald-500/20 text-emerald-400' : 'bg-red-500/20 text-red-400'
-          }`}>
-            ⛰️ {terrainBonus > 0 ? '+' : ''}{terrainBonus} pts
-          </span>
-        )}
       </div>
+
+      {/* Terrain bonus */}
+      {terrainBonus !== undefined && terrainBonus !== 0 && (
+        <div
+          className={`mt-2 flex items-center gap-1 text-sm font-medium ${
+            terrainBonus > 0 ? 'text-emerald-400' : 'text-red-400'
+          }`}
+        >
+          <span className="material-symbols-outlined !text-base leading-none" aria-hidden="true">
+            {terrainBonus > 0 ? 'keyboard_double_arrow_up' : 'keyboard_double_arrow_down'}
+          </span>
+          Terrain bonus: {terrainBonus > 0 ? '+' : ''}{terrainBonus} pts
+        </div>
+      )}
     </div>
   );
 }

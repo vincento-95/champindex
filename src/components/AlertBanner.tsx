@@ -75,9 +75,7 @@ export function AlertBanner({ stats }: AlertBannerProps) {
 
   return (
     <div className="px-4 py-3">
-      <p className="text-[10px] text-white/40 uppercase tracking-wider font-medium mb-2">
-        🔔 Alertes conditions actuelles
-      </p>
+      {/* Le titre de section « Alertes espèces » est fourni par Layout */}
       <div className="flex gap-2.5 overflow-x-auto scrollbar-hide snap-x snap-mandatory pb-1 -mx-4 px-4">
         {activeAlerts.map(({ alert, relevance }) => (
           <AlertCard key={alert.id} alert={alert} relevance={relevance} />

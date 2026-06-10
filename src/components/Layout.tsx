@@ -5,6 +5,7 @@
 import { useMemo, useEffect } from 'react';
 import type { ResultTab, MushroomScore, ForecastDay, ForagingCategory } from '../types';
 import { FORAGING_SPECIES, getForagingByMonth } from '../lib/foraging-db';
+import { matchAlerts } from '../lib/alert-engine';
 import { checkAndNotify } from '../lib/notifications';
 import ScoreGauge from './ScoreGauge';
 import ScoreDetails from './ScoreDetails';
@@ -71,6 +72,12 @@ export default function Layout({
     if (alertStats) checkAndNotify(alertStats);
   }, [alertStats]);
 
+  // Titre de section affiché uniquement si AlertBanner a du contenu
+  const hasAlerts = useMemo(
+    () => (alertStats ? matchAlerts(alertStats).length > 0 : false),
+    [alertStats],
+  );
+
   // Espèces à afficher selon la catégorie
   const speciesForTab = useMemo(() => {
     if (selectedCategory === 'mushroom') {
@@ -131,7 +138,16 @@ export default function Layout({
             <ScoreGauge score={score.total} levelInfo={score.levelInfo} terrainBonus={score.terrain?.total} />
             <ScoreDetails details={score.weather.details} />
             <Advice advice={score.levelInfo.advice} />
-            {alertStats && <AlertBanner stats={alertStats} />}
+            {alertStats && (
+              <section className="mt-6">
+                {hasAlerts && (
+                  <h3 className="px-5 text-sm font-bold text-white/80 uppercase tracking-widest mb-1">
+                    Alertes Espèces
+                  </h3>
+                )}
+                <AlertBanner stats={alertStats} />
+              </section>
+            )}
           </>
         )}
 

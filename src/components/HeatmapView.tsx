@@ -220,43 +220,115 @@ function LocationMarkers({ category, onSelect }: { category: ForagingCategory; o
 }
 
 /** Bottom sheet lieu */
-function LocationSheet({ location, category, onClose }: { location: ForagingLocation; category: ForagingCategory; onClose: () => void }) {
-  const emoji = getLocationEmoji(location.habitatType);
+function LocationSheet({
+  location,
+  category,
+  nearestPoint,
+  onClose,
+}: {
+  location: ForagingLocation;
+  category: ForagingCategory;
+  nearestPoint: HeatmapPointData | null;
+  onClose: () => void;
+}) {
   const speciesContent = category === 'mushroom' ? location.mainMushrooms : category === 'plant' ? location.mainPlants : location.mainBerries;
   const speciesLabel = category === 'mushroom' ? '🍄 Champignons' : category === 'plant' ? '🌿 Plantes' : '🫐 Baies & fruits';
+  const conditions = nearestPoint ? getPointColor(nearestPoint.score) : null;
+  const soil = nearestPoint ? Math.round(nearestPoint.stats.soilBalance) : 0;
 
   return (
-    <div className="absolute bottom-0 left-0 right-0 z-[1000] bg-[#1a2215]/95 backdrop-blur-xl border-t border-white/10 rounded-t-2xl px-5 py-4 animate-slide-up max-h-[60vh] overflow-y-auto">
-      <div className="w-10 h-1 bg-white/20 rounded-full mx-auto mb-3" />
-      <div className="flex items-start justify-between">
-        <div className="flex-1">
-          <div className="flex items-center gap-2">
-            <span className="text-2xl">{emoji}</span>
-            <h3 className="text-lg font-semibold text-white">{location.name}</h3>
+    <div className="absolute bottom-0 left-0 right-0 z-[1000] bg-[#151c10]/95 backdrop-blur-xl border-t border-white/10 rounded-t-3xl shadow-[0_-10px_40px_rgba(0,0,0,0.5)] px-6 pt-2 pb-8 animate-slide-up max-h-[60vh] overflow-y-auto">
+      <div className="w-12 h-1 bg-white/15 rounded-full mx-auto mb-5" />
+
+      {/* En-tête : nom + badge score */}
+      <div className="flex items-start justify-between gap-3 mb-5">
+        <div className="flex-1 min-w-0">
+          <h3 className="text-2xl font-bold text-white leading-tight">{location.name}</h3>
+          <div className="flex flex-wrap items-center gap-2 mt-1.5">
+            <span className="bg-white/10 text-white/50 text-[10px] px-2 py-0.5 rounded font-bold uppercase tracking-wide">
+              {location.department}
+            </span>
+            <span className="text-white/40 text-xs italic">{location.habitatType}</span>
           </div>
-          <p className="text-xs text-white/40 mt-0.5">{location.department}</p>
-          <p className="text-[11px] text-white/50 mt-1">{location.habitatType}</p>
+          {location.areaHectares && (
+            <p className="text-[11px] text-emerald-400/70 mt-1.5">📐 {location.areaHectares.toLocaleString('fr-FR')} ha</p>
+          )}
         </div>
-        <button onClick={onClose} className="text-white/40 hover:text-white/80 text-xl leading-none">&times;</button>
+        <div className="flex items-start gap-2 shrink-0">
+          {nearestPoint && (
+            <div className="bg-orange-500/10 border border-orange-500/50 rounded-2xl w-14 h-14 flex items-center justify-center">
+              <span className="text-2xl font-black text-orange-500">{nearestPoint.score}</span>
+            </div>
+          )}
+          <button
+            onClick={onClose}
+            className="w-11 h-11 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white/40 hover:text-white/80 hover:bg-white/10 transition-colors"
+            aria-label="Fermer">
+            <span className="material-symbols-outlined text-xl">close</span>
+          </button>
+        </div>
       </div>
-      {location.areaHectares && (
-        <p className="text-[11px] text-emerald-400/60 mt-2">📐 {location.areaHectares.toLocaleString('fr-FR')} ha</p>
+
+      {/* Cartes métriques météo (point heatmap le plus proche) */}
+      {nearestPoint && (
+        <>
+          <div className="grid grid-cols-3 gap-3 mb-4">
+            <div className="bg-white/5 border border-white/5 p-3 rounded-2xl text-center">
+              <div className="text-[10px] text-white/40 uppercase font-bold tracking-wider mb-1">Pluie</div>
+              <div className="text-lg font-bold text-white">
+                {Math.round(nearestPoint.stats.rain14d)}
+                <span className="text-xs font-semibold text-white/50">mm</span>
+              </div>
+            </div>
+            <div className="bg-white/5 border border-white/5 p-3 rounded-2xl text-center">
+              <div className="text-[10px] text-white/40 uppercase font-bold tracking-wider mb-1">Temp</div>
+              <div className="text-lg font-bold text-white">
+                {Math.round(nearestPoint.stats.tempMean7d)}
+                <span className="text-xs font-semibold text-white/50">°C</span>
+              </div>
+            </div>
+            <div className="bg-white/5 border border-white/5 p-3 rounded-2xl text-center">
+              <div className="text-[10px] text-white/40 uppercase font-bold tracking-wider mb-1">Sol</div>
+              <div className={`text-lg font-bold ${soil >= 0 ? 'text-blue-400' : 'text-amber-400'}`}>
+                {soil >= 0 ? `+${soil}` : soil}
+                <span className="text-xs font-semibold text-white/50">mm</span>
+              </div>
+            </div>
+          </div>
+          {conditions && (
+            <div className="flex items-center gap-2 mb-5">
+              <span
+                className="w-2 h-2 rounded-full shrink-0"
+                style={{ backgroundColor: conditions.color, boxShadow: `0 0 8px ${conditions.color}` }}
+              />
+              <span className="text-[10px] text-white/50 font-medium uppercase tracking-wide">
+                Conditions météo : {conditions.label}
+              </span>
+            </div>
+          )}
+        </>
       )}
+
+      {/* Espèces */}
       {speciesContent && (
-        <div className="mt-3 p-3 rounded-xl bg-white/5 border border-white/5">
-          <p className="text-[10px] text-white/40 uppercase tracking-wider mb-1.5">{speciesLabel}</p>
-          <p className="text-xs text-white/80 leading-relaxed">{speciesContent}</p>
+        <div className="bg-white/5 border border-white/5 rounded-2xl p-4 mb-3">
+          <p className="text-[10px] text-white/40 uppercase tracking-wider font-bold mb-1.5">{speciesLabel}</p>
+          <p className="text-sm text-white/80 leading-relaxed">{speciesContent}</p>
         </div>
       )}
+
+      {/* Meilleure période */}
       {location.bestPeriod && (
-        <div className="mt-2 flex items-center gap-2">
-          <span className="text-xs">📅</span>
-          <p className="text-xs text-amber-300/80">{location.bestPeriod}</p>
+        <div className="flex items-center gap-2 mb-2">
+          <span className="material-symbols-outlined text-base text-amber-400">calendar_month</span>
+          <p className="text-xs text-amber-300/90 font-medium">{location.bestPeriod}</p>
         </div>
       )}
+
+      {/* Notes */}
       {location.notes && (
-        <div className="mt-2 flex items-start gap-2">
-          <span className="text-xs mt-0.5">📋</span>
+        <div className="flex items-start gap-2">
+          <span className="material-symbols-outlined text-base text-white/30 mt-0.5">sticky_note_2</span>
           <p className="text-xs text-white/50 leading-relaxed">{location.notes}</p>
         </div>
       )}
@@ -282,6 +354,19 @@ export default function HeatmapView({ onBack, selectedCategory }: HeatmapViewPro
   const handleSelectLocation = useCallback((loc: ForagingLocation) => {
     setSelectedLocation(loc);
   }, []);
+
+  // Point heatmap le plus proche du lieu sélectionné (stats météo réelles).
+  // Au-delà de ~0.4° de distance, on n'affiche rien plutôt que d'inventer.
+  const nearestPoint = useMemo(() => {
+    if (!selectedLocation) return null;
+    let best: HeatmapPointData | null = null;
+    let bestD = Infinity;
+    for (const p of points) {
+      const d = (p.lat - selectedLocation.lat) ** 2 + (p.lon - selectedLocation.lng) ** 2;
+      if (d < bestD) { bestD = d; best = p; }
+    }
+    return best && bestD <= 0.16 ? best : null;
+  }, [selectedLocation, points]);
 
   // --- Loading ---
   if (loading && points.length === 0) {
@@ -333,31 +418,45 @@ export default function HeatmapView({ onBack, selectedCategory }: HeatmapViewPro
   // --- Carte ---
   return (
     <div className="heatmap-view relative w-screen h-screen overflow-hidden">
-      {/* Bouton retour */}
-      <button onClick={onBack}
-        className="absolute top-4 left-3 z-[1000] bg-black/50 backdrop-blur-md text-white
-          w-10 h-10 rounded-full flex items-center justify-center hover:bg-black/70 shadow-lg"
-        aria-label="Retour">
-        <span className="material-symbols-outlined text-xl">arrow_back</span>
-      </button>
-
-      {/* Boutons droite */}
-      <div className="absolute top-4 right-3 z-[1000] flex gap-2">
-        <button
-          onClick={() => setShowSpots(v => !v)}
-          className={`w-10 h-10 rounded-full flex items-center justify-center backdrop-blur-md shadow-lg transition-colors ${
-            showSpots ? 'bg-emerald-600/80 text-white' : 'bg-black/50 text-white/60 hover:bg-black/70'
-          }`}
-          aria-label={showSpots ? 'Masquer les lieux' : 'Afficher les lieux'}>
-          <span className="material-symbols-outlined text-xl">location_on</span>
+      {/* Contrôles haut gauche : Retour, rafraîchir, toggle spots */}
+      <div className="absolute top-4 left-3 z-[1000] flex flex-col items-start gap-2">
+        <button onClick={onBack}
+          className="h-11 pl-3 pr-4 rounded-full bg-[#10160c]/90 backdrop-blur-md border border-white/10
+            flex items-center gap-2 text-sm font-medium text-white shadow-lg hover:bg-[#1a2215] transition-colors"
+          aria-label="Retour">
+          <span className="material-symbols-outlined text-xl">arrow_back</span>
+          Retour
         </button>
         <button onClick={() => refresh(true)} disabled={loading}
-          className="w-10 h-10 rounded-full flex items-center justify-center bg-black/50 backdrop-blur-md text-white/60 hover:bg-black/70 shadow-lg disabled:opacity-50"
+          className="w-11 h-11 rounded-full bg-[#10160c]/90 backdrop-blur-md border border-white/10
+            flex items-center justify-center text-white/70 shadow-lg hover:text-white transition-colors disabled:opacity-50"
           aria-label="Rafraîchir">
           <span className={`material-symbols-outlined text-xl ${loading ? 'animate-spin' : ''}`}>
             {loading ? 'progress_activity' : 'refresh'}
           </span>
         </button>
+        <button
+          onClick={() => setShowSpots(v => !v)}
+          className={`h-11 px-4 rounded-full backdrop-blur-md shadow-lg border flex items-center gap-2
+            text-xs font-bold uppercase tracking-wider transition-colors ${
+            showSpots
+              ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/50'
+              : 'bg-[#10160c]/90 text-white/50 border-white/10'
+          }`}
+          aria-label={showSpots ? 'Masquer les lieux' : 'Afficher les lieux'}>
+          <span className={`w-2 h-2 rounded-full ${showSpots ? 'bg-emerald-400 animate-pulse' : 'bg-white/30'}`} />
+          {showSpots ? 'Spots ON' : 'Spots OFF'}
+        </button>
+      </div>
+
+      {/* Badge stats haut droite */}
+      <div className="absolute top-4 right-3 z-[1000]">
+        <div className="bg-[#10160c]/90 backdrop-blur-md px-4 py-2 rounded-xl border border-white/10 shadow-lg text-right">
+          <div className="text-[10px] uppercase text-white/40 font-bold tracking-tight">🌡️ Carte de France</div>
+          <div className="text-lg font-bold text-white leading-tight">
+            {points.length.toLocaleString('fr-FR')} <span className="text-xs font-semibold text-white/40">forêts</span>
+          </div>
+        </div>
       </div>
 
       {/* Carte Leaflet — tuiles satellite Google */}
@@ -394,7 +493,7 @@ export default function HeatmapView({ onBack, selectedCategory }: HeatmapViewPro
 
       {/* Bandeau données simulées */}
       {hasSimulatedData && (
-        <div className="absolute top-16 left-3 right-3 z-[1000] bg-amber-900/90 backdrop-blur-md rounded-xl px-3 py-2 text-center">
+        <div className="absolute top-44 left-3 right-3 z-[1000] bg-amber-900/90 backdrop-blur-md rounded-xl px-3 py-2 text-center">
           <p className="text-xs text-amber-200 font-medium">
             ⚠️ Météo temps réel indisponible — scores estimés. Réessayez dans une minute.
           </p>
@@ -406,7 +505,12 @@ export default function HeatmapView({ onBack, selectedCategory }: HeatmapViewPro
 
       {/* Bottom sheet lieu */}
       {selectedLocation && (
-        <LocationSheet location={selectedLocation} category={selectedCategory} onClose={() => setSelectedLocation(null)} />
+        <LocationSheet
+          location={selectedLocation}
+          category={selectedCategory}
+          nearestPoint={nearestPoint}
+          onClose={() => setSelectedLocation(null)}
+        />
       )}
     </div>
   );
