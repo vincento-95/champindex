@@ -40,6 +40,10 @@ function ScorePoints({ points }: { points: HeatmapPointData[] }) {
               color: 'transparent',
               fillColor: color,
               fillOpacity: 0.7,
+              // Transparents aux taps : sinon ils interceptent le clic et
+              // MapClickToLocation (sélection du lieu le plus proche) ne
+              // se déclenche jamais quand on tape pile sur un point.
+              interactive: false,
             }}
           />
         );
@@ -272,6 +276,9 @@ export default function HeatmapView({ onBack, selectedCategory }: HeatmapViewPro
   const [showSpots, setShowSpots] = useState(true);
   const [selectedLocation, setSelectedLocation] = useState<ForagingLocation | null>(null);
 
+  // Météo réelle indisponible (rate-limit, hors-ligne) → scores estimés
+  const hasSimulatedData = points.some(p => p.simulated);
+
   const handleSelectLocation = useCallback((loc: ForagingLocation) => {
     setSelectedLocation(loc);
   }, []);
@@ -360,11 +367,14 @@ export default function HeatmapView({ onBack, selectedCategory }: HeatmapViewPro
         className="w-full h-full"
         zoomControl={false}
         attributionControl={false}
+        preferCanvas
         aria-label="Carte de France satellite">
+        {/* Esri World Imagery — utilisable sans clé (contrairement aux
+            tuiles internes Google, hors conditions d'utilisation) */}
         <TileLayer
-          url="https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}"
-          attribution="&copy; Google Maps"
-          maxZoom={20}
+          url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+          attribution="&copy; Esri — Source: Esri, Maxar, Earthstar Geographics"
+          maxZoom={19}
         />
 
         {/* Points colorés 3 niveaux (données météo) */}
@@ -381,6 +391,15 @@ export default function HeatmapView({ onBack, selectedCategory }: HeatmapViewPro
         {/* Clic → vrai lieu le plus proche */}
         <MapClickToLocation onSelectLocation={handleSelectLocation} category={selectedCategory} />
       </MapContainer>
+
+      {/* Bandeau données simulées */}
+      {hasSimulatedData && (
+        <div className="absolute top-16 left-3 right-3 z-[1000] bg-amber-900/90 backdrop-blur-md rounded-xl px-3 py-2 text-center">
+          <p className="text-xs text-amber-200 font-medium">
+            ⚠️ Météo temps réel indisponible — scores estimés. Réessayez dans une minute.
+          </p>
+        </div>
+      )}
 
       {/* Légende */}
       <Legend category={selectedCategory} />

@@ -43,6 +43,8 @@ export interface HeatmapPointData {
   score: number;          // 0-100 probabilité champignons
   stats: HeatmapStats;
   essences: string[];     // essences dominantes de la forêt
+  /** true si le score repose sur des données simulées (météo indisponible) */
+  simulated?: boolean;
 }
 
 interface BatchWeatherDaily {
@@ -58,6 +60,8 @@ interface BatchWeatherResponse {
   latitude: number;
   longitude: number;
   daily: BatchWeatherDaily;
+  /** true si les données sont issues du fallback simulé (API indisponible) */
+  simulated?: boolean;
 }
 
 interface CachedHeatmapData {
@@ -72,12 +76,16 @@ interface CachedWeatherData {
 
 // --- Constantes ---
 
-const CACHE_KEY = 'champindex_heatmap_v6';
-const WEATHER_CACHE_KEY = 'champindex_weather_raw_v3';
+// v7/v4 : purge les caches antérieurs au fix « données simulées persistées »
+const CACHE_KEY = 'champindex_heatmap_v7';
+const WEATHER_CACHE_KEY = 'champindex_weather_raw_v4';
 const CACHE_TTL = 6 * 60 * 60 * 1000; // 6 heures — la météo ne change pas toutes les heures
 const BATCH_SIZE = 300;
-const CONCURRENCY = 2; // 2 parallèles — safe avec ~5 batches
-const BATCH_DELAY_MS = 300; // 300ms entre rounds
+// La limite Open-Meteo gratuite est PAR MINUTE et chaque coordonnée d'un
+// batch compte comme un appel (~450 points par chargement complet) :
+// séquencer les batches pour rester sous le quota.
+const CONCURRENCY = 1;
+const BATCH_DELAY_MS = 500;
 
 // --- WFS IGN pour click-anywhere ---
 
@@ -409,6 +417,7 @@ function generateFallbackWeather(points: ForestPoint[]): BatchWeatherResponse[] 
     return {
       latitude: p.lat,
       longitude: p.lon,
+      simulated: true,
       daily: {
         time: times,
         temperature_2m_max: tempMax,
@@ -472,13 +481,18 @@ async function fetchRawWeather(
     }
   }
 
-  // Sauvegarder les données météo brutes
-  try {
-    localStorage.setItem(WEATHER_CACHE_KEY, JSON.stringify({
-      timestamp: Date.now(),
-      weather: allWeatherData,
-    } satisfies CachedWeatherData));
-  } catch { /* localStorage full — ignore */ }
+  // Sauvegarder les données météo brutes — mais JAMAIS les données simulées :
+  // les persister 6h ferait passer de la météo inventée pour du temps réel
+  // longtemps après que l'API soit redevenue disponible.
+  const hasSimulated = allWeatherData.some(w => w?.simulated);
+  if (!hasSimulated) {
+    try {
+      localStorage.setItem(WEATHER_CACHE_KEY, JSON.stringify({
+        timestamp: Date.now(),
+        weather: allWeatherData,
+      } satisfies CachedWeatherData));
+    } catch { /* localStorage full — ignore */ }
+  }
 
   return allWeatherData;
 }
@@ -501,7 +515,7 @@ function scorePoints(
       };
     }
     const { score, stats } = computeHeatmapProbability(w.daily, category);
-    return { id: fp.id, lat: fp.lat, lon: fp.lon, name: fp.name, region: fp.region, score, stats, essences: fp.essences };
+    return { id: fp.id, lat: fp.lat, lon: fp.lon, name: fp.name, region: fp.region, score, stats, essences: fp.essences, simulated: w.simulated };
   });
 }
 
@@ -523,8 +537,10 @@ export async function fetchBatchHeatmapData(
   // 3. Scorer les points pour cette catégorie (instantané, pas de réseau)
   const points = scorePoints(weather, category);
 
-  // 4. Cacher les points scorés
-  saveToCache(points, scoredCacheKey);
+  // 4. Cacher les points scorés (sauf si des données simulées s'y trouvent)
+  if (!points.some(p => p.simulated)) {
+    saveToCache(points, scoredCacheKey);
+  }
   return points;
 }
 

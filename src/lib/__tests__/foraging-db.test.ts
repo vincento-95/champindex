@@ -13,8 +13,10 @@ import {
 } from '../foraging-db';
 
 describe('FORAGING_SPECIES', () => {
-  it('contains 310 species', () => {
-    expect(FORAGING_SPECIES.length).toBe(310);
+  it('contains 309 species', () => {
+    // 310 à l'origine, moins 1 doublon exact « Sureau noir (baies) »
+    // (deux entrées identiques dont une au calendrier faux)
+    expect(FORAGING_SPECIES.length).toBe(309);
   });
 
   it('has mushrooms, plants and berries', () => {

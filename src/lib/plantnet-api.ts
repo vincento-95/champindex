@@ -6,9 +6,11 @@
 import { FORAGING_SPECIES } from './foraging-db';
 import type { ForagingSpecies } from '../types';
 
-// Clé API via variable d'environnement (pas exposée dans le bundle en prod)
-// Fallback sur la clé directe pour le dev
-const API_KEY = import.meta.env.VITE_PLANTNET_API_KEY || '2b10o5cBRIFH4CXXWop0IiVhju';
+// Clé API via variable d'environnement. ATTENTION : toute variable VITE_*
+// est inlinée dans le bundle client au build — la clé est donc visible par
+// quiconque inspecte le JS, et le quota gratuit (500 req/jour) est partagé
+// entre tous les utilisateurs. Pour y remédier, passer par un proxy serveur.
+const API_KEY = import.meta.env.VITE_PLANTNET_API_KEY || '';
 const API_BASE = 'https://my-api.plantnet.org/v2/identify';
 const PROJECT = 'all';
 
@@ -97,26 +99,42 @@ function compressImage(file: File): Promise<File> {
 
 // ── Matching PlantNet → notre base locale ──
 
+/**
+ * Si plusieurs entrées partagent le même nom latin (ex: Dioscorea communis,
+ * pousses comestibles ET baies mortelles), retourner la plus dangereuse :
+ * ne jamais présenter une fiche rassurante pour une espèce à risque.
+ */
+function mostDangerous(matches: ForagingSpecies[]): ForagingSpecies | null {
+  if (matches.length === 0) return null;
+  const rank = (s: ForagingSpecies): number => {
+    if (s.comestibilite === 'mortel' || s.dangerConfusion === 'mortel') return 3;
+    if (s.comestibilite === 'toxique' || s.dangerConfusion === 'tres_eleve') return 2;
+    if (s.comestibilite === 'non_comestible' || s.dangerConfusion === 'eleve') return 1;
+    return 0;
+  };
+  return matches.reduce((worst, s) => (rank(s) > rank(worst) ? s : worst));
+}
+
 export function matchToLocalSpecies(latin: string): ForagingSpecies | null {
   const normalized = latin.toLowerCase().trim();
+  if (!normalized) return null;
   const binomial = normalized.split(' ').slice(0, 2).join(' ');
 
   // 1. Match exact sur le nom latin complet
-  const exact = FORAGING_SPECIES.find(s => s.latin.toLowerCase() === normalized);
+  const exact = mostDangerous(
+    FORAGING_SPECIES.filter(s => s.latin.toLowerCase() === normalized)
+  );
   if (exact) return exact;
 
   // 2. Match sur le binomial (genre + espèce)
-  const binomialMatch = FORAGING_SPECIES.find(s =>
-    s.latin.toLowerCase().split(' ').slice(0, 2).join(' ') === binomial
+  // PAS de fallback au genre seul : retourner « la première espèce du même
+  // genre » faisait passer des espèces toxiques absentes de la base pour
+  // des fiches comestibles (ex: toute Amanita inconnue → Amanite des Césars).
+  return mostDangerous(
+    FORAGING_SPECIES.filter(s =>
+      s.latin.toLowerCase().split(' ').slice(0, 2).join(' ') === binomial
+    )
   );
-  if (binomialMatch) return binomialMatch;
-
-  // 3. Match sur le genre seul (fallback partiel)
-  const genus = normalized.split(' ')[0];
-  const genusMatch = FORAGING_SPECIES.find(s =>
-    s.latin.toLowerCase().startsWith(genus + ' ')
-  );
-  return genusMatch || null;
 }
 
 // ── API ──
@@ -150,7 +168,7 @@ export async function identifySpecies(
         throw new Error('Aucune espèce identifiée. Essayez avec une photo plus nette.');
       }
       if (response.status === 429) {
-        throw new Error('Limite quotidienne atteinte (500/jour). Réessayez demain.');
+        throw new Error("Le service d'identification a atteint sa limite quotidienne. Réessayez demain.");
       }
       if (response.status === 400) {
         throw new Error('Image invalide. Essayez une autre photo.');

@@ -2,9 +2,10 @@
 // ChampIndex — Layout principal avec navigation par onglets
 // ============================================================
 
-import { useMemo } from 'react';
+import { useMemo, useEffect } from 'react';
 import type { ResultTab, MushroomScore, ForecastDay, ForagingCategory } from '../types';
 import { FORAGING_SPECIES, getForagingByMonth } from '../lib/foraging-db';
+import { checkAndNotify } from '../lib/notifications';
 import ScoreGauge from './ScoreGauge';
 import ScoreDetails from './ScoreDetails';
 import Advice from './Advice';
@@ -63,6 +64,12 @@ export default function Layout({
       soilBalance: (isNaN(rain14Val) ? 30 : rain14Val) * 0.4,
     };
   }, [score.weather.details]);
+
+  // Notification native si les conditions matchent une alerte
+  // (la fonction gère elle-même permission + throttle 6h)
+  useEffect(() => {
+    if (alertStats) checkAndNotify(alertStats);
+  }, [alertStats]);
 
   // Espèces à afficher selon la catégorie
   const speciesForTab = useMemo(() => {

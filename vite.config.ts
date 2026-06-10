@@ -18,7 +18,7 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.svg', 'icons.svg'],
+      includeAssets: ['favicon.svg', 'icons.svg', 'apple-touch-icon.png'],
       manifest: {
         name: 'ChampIndex — Foraging France',
         short_name: 'ChampIndex',
@@ -31,9 +31,20 @@ export default defineConfig({
         orientation: 'portrait',
         icons: [
           {
-            src: 'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🍄</text></svg>',
-            sizes: 'any',
-            type: 'image/svg+xml',
+            src: 'pwa-192x192.png',
+            sizes: '192x192',
+            type: 'image/png',
+          },
+          {
+            src: 'pwa-512x512.png',
+            sizes: '512x512',
+            type: 'image/png',
+          },
+          {
+            src: 'pwa-maskable-512x512.png',
+            sizes: '512x512',
+            type: 'image/png',
+            purpose: 'maskable',
           },
         ],
         categories: ['lifestyle', 'weather'],
@@ -58,14 +69,52 @@ export default defineConfig({
             },
           },
           {
-            // Open-Meteo weather API — stale while revalidate, 1h
+            // Open-Meteo weather API — network d'abord (sinon le bouton
+            // « Rafraîchir » resservirait silencieusement le cache du SW),
+            // fallback cache 1h si hors-ligne
             urlPattern: /^https:\/\/.*open-meteo\.com/,
-            handler: 'StaleWhileRevalidate',
+            handler: 'NetworkFirst',
             options: {
               cacheName: 'weather-api',
+              networkTimeoutSeconds: 6,
               expiration: {
                 maxEntries: 50,
                 maxAgeSeconds: 60 * 60, // 1 heure
+              },
+              cacheableResponse: { statuses: [0, 200] },
+            },
+          },
+          {
+            // Tuiles satellite Esri (heatmap) — cache first, 30 jours
+            urlPattern: /^https:\/\/server\.arcgisonline\.com/,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'esri-tiles',
+              expiration: {
+                maxEntries: 500,
+                maxAgeSeconds: 30 * 24 * 60 * 60,
+              },
+              cacheableResponse: { statuses: [0, 200] },
+            },
+          },
+          {
+            // CSS Google Fonts (Material Symbols) — indispensable offline,
+            // sinon les icônes s'affichent comme du texte brut
+            urlPattern: /^https:\/\/fonts\.googleapis\.com/,
+            handler: 'StaleWhileRevalidate',
+            options: {
+              cacheName: 'google-fonts-css',
+            },
+          },
+          {
+            // Fichiers de police Google Fonts — cache first, 1 an
+            urlPattern: /^https:\/\/fonts\.gstatic\.com/,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'google-fonts-files',
+              expiration: {
+                maxEntries: 10,
+                maxAgeSeconds: 365 * 24 * 60 * 60,
               },
               cacheableResponse: { statuses: [0, 200] },
             },

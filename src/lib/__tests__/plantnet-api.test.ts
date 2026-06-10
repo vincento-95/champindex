@@ -24,13 +24,18 @@ describe('matchToLocalSpecies', () => {
     expect(result!.nom).toContain('Ail des ours');
   });
 
-  it('matches genus fallback', () => {
-    // If exact species not found, try genus match
-    const result = matchToLocalSpecies('Boletus reticulatus');
-    // Should match some Boletus in our DB
-    if (result) {
-      expect(result.latin.toLowerCase()).toContain('boletus');
-    }
+  it('does NOT fall back to genus-only matches (safety)', () => {
+    // Amanita phalloides (mortelle) n'est pas dans la base : un fallback au
+    // genre renverrait une amanite comestible — inacceptable.
+    const result = matchToLocalSpecies('Amanita phalloides');
+    expect(result).toBeNull();
+  });
+
+  it('returns the most dangerous entry when the latin name is duplicated', () => {
+    // Dioscorea communis existe en version pousses (bon) et baies (mortel)
+    const result = matchToLocalSpecies('Dioscorea communis');
+    expect(result).toBeDefined();
+    expect(result!.comestibilite).toBe('mortel');
   });
 
   it('returns null for unknown species', () => {

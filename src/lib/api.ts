@@ -260,6 +260,8 @@ export async function searchLocation(query: string): Promise<{ lat: number; lon:
 }
 
 // --- Utilitaires ---
+// Date en heure de Paris (toISOString renverrait la date UTC, décalée
+// d'un jour entre minuit et 2h du matin en France)
 function formatDate(date: Date): string {
-  return date.toISOString().split('T')[0];
+  return date.toLocaleDateString('en-CA', { timeZone: 'Europe/Paris' });
 }

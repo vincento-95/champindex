@@ -29,8 +29,24 @@ export function getNotificationPermission(): NotificationPermission | 'unsupport
 }
 
 /**
+ * Affiche une notification native. Sur Chrome Android, `new Notification()`
+ * lève « Illegal constructor » : il faut passer par le service worker.
+ */
+function showNativeNotification(title: string, options: NotificationOptions): void {
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.ready
+      .then(reg => reg.showNotification(title, options))
+      .catch(() => {
+        try { new Notification(title, options); } catch { /* non supporté */ }
+      });
+    return;
+  }
+  try { new Notification(title, options); } catch { /* non supporté */ }
+}
+
+/**
  * Vérifie les alertes et envoie une notification native si pertinent.
- * Appelé au lancement de l'app (max 1 notif / 6h).
+ * Appelé quand un score est calculé (max 1 notif / 6h).
  */
 export function checkAndNotify(stats: HeatmapStats): void {
   if (!isNotificationSupported() || Notification.permission !== 'granted') return;
@@ -45,9 +61,9 @@ export function checkAndNotify(stats: HeatmapStats): void {
 
   const { alert } = topAlert;
 
-  new Notification(`🍄 ${alert.targetSpecies}`, {
+  showNativeNotification(`🍄 ${alert.targetSpecies}`, {
     body: alert.appMessage + `\n📍 ${alert.whereToLook}`,
-    icon: '/favicon.svg',
+    icon: `${import.meta.env.BASE_URL}favicon.svg`,
     tag: 'champindex-alert', // remplace la précédente
     silent: false,
   });

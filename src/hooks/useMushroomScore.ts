@@ -22,12 +22,38 @@ function mean(arr: number[]): number {
   return arr.length ? arr.reduce((a, b) => a + b, 0) / arr.length : 0;
 }
 
+/** Date du jour en heure de Paris — les dates Open-Meteo sont en Europe/Paris,
+ *  alors que toISOString() renvoie la date UTC (fausse entre minuit et 2h). */
+function todayParis(): string {
+  return new Date().toLocaleDateString('en-CA', { timeZone: 'Europe/Paris' });
+}
+
+/** Tronque les données météo au jour courant inclus. Le tableau fusionné
+ *  archive+prévisions se termine à J+6 : sans troncature, les fenêtres
+ *  slice(-N) du scoring porteraient sur la météo FUTURE. */
+function truncateToToday(weather: WeatherData): WeatherData {
+  const todayIdx = weather.daily.time.indexOf(todayParis());
+  if (todayIdx < 0) return weather;
+  const cut = todayIdx + 1;
+  return {
+    ...weather,
+    daily: {
+      time: weather.daily.time.slice(0, cut),
+      temperature_2m_max: weather.daily.temperature_2m_max.slice(0, cut),
+      temperature_2m_min: weather.daily.temperature_2m_min.slice(0, cut),
+      temperature_2m_mean: weather.daily.temperature_2m_mean.slice(0, cut),
+      precipitation_sum: weather.daily.precipitation_sum.slice(0, cut),
+      precipitation_probability_max: weather.daily.precipitation_probability_max?.slice(0, cut),
+    },
+  };
+}
+
 /**
  * Calcule les prévisions 7 jours avec score estimé pour chaque jour
  */
 function computeForecast(weather: WeatherData, terrainBonus: number, category: ForagingCategory): ForecastDay[] {
   const daily = weather.daily;
-  const today = new Date().toISOString().split('T')[0];
+  const today = todayParis();
   const days: ForecastDay[] = [];
   const dayNames = ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'];
 
@@ -55,15 +81,18 @@ function computeForecast(weather: WeatherData, terrainBonus: number, category: F
 
     if (category === 'mushroom') {
       if (totalRain14 >= 40 && totalRain14 <= 80) dayScore += 30;
+      else if (totalRain14 > 120) dayScore += 8;
+      else if (totalRain14 > 80) dayScore += 18;
       else if (totalRain14 >= 25) dayScore += 22;
       else if (totalRain14 >= 10) dayScore += 10;
       else dayScore += 2;
       if (totalRain3 >= 10 && totalRain3 <= 30) dayScore += 20;
+      else if (totalRain3 > 30) dayScore += 10;
       else if (totalRain3 >= 5) dayScore += 14;
       else dayScore += 3;
       const idealRange: [number, number] = (month >= 9 || month <= 2) ? [8, 18] : [14, 22];
       if (avgTemp >= idealRange[0] && avgTemp <= idealRange[1]) dayScore += 25;
-      else if (avgTemp >= idealRange[0] - 4) dayScore += 16;
+      else if (avgTemp >= idealRange[0] - 4 && avgTemp <= idealRange[1] + 4) dayScore += 16;
       else dayScore += 8;
       dayScore += [9, 10, 11].includes(month) ? 10 : month >= 4 && month <= 8 ? 6 : 2;
       dayScore += 10;
@@ -72,7 +101,7 @@ function computeForecast(weather: WeatherData, terrainBonus: number, category: F
       const idealMin = month >= 3 && month <= 5 ? 8 : month >= 6 && month <= 8 ? 15 : 5;
       const idealMax = month >= 3 && month <= 5 ? 22 : month >= 6 && month <= 8 ? 32 : 18;
       if (avgTemp >= idealMin && avgTemp <= idealMax) dayScore += 30;
-      else if (avgTemp >= idealMin - 4) dayScore += 18;
+      else if (avgTemp >= idealMin - 4 && avgTemp <= idealMax + 4) dayScore += 18;
       else dayScore += 5;
       // Saison plantes : printemps pic
       dayScore += [3, 4, 5, 6].includes(month) ? 25 : [7, 8, 9, 10].includes(month) ? 15 : 5;
@@ -139,8 +168,10 @@ export function useMushroomScore() {
           : reverseGeocode(coords.lat, coords.lon),
       ]);
 
-      // Score météo (adapté à la catégorie)
-      const weatherScore = computeWeatherScoreForCategory(weather, category);
+      // Score météo (adapté à la catégorie) — sur le passé uniquement,
+      // les jours de prévision restent réservés à computeForecast
+      const pastWeather = truncateToToday(weather);
+      const weatherScore = computeWeatherScoreForCategory(pastWeather, category);
 
       // Score terrain (optionnel)
       let terrainScore = null;
@@ -158,7 +189,7 @@ export function useMushroomScore() {
 
       // Espèces filtrées
       const month = new Date().getMonth() + 1;
-      const avgTemp = mean(weather.daily.temperature_2m_mean.slice(-7));
+      const avgTemp = mean(pastWeather.daily.temperature_2m_mean.slice(-7));
       const altitude = terrainData?.altitude ?? 300;
       const species = getSpeciesForConditions(month, avgTemp, altitude);
 
@@ -174,7 +205,7 @@ export function useMushroomScore() {
         species,
         location,
         coordinates: coords,
-        date: new Date().toISOString().split('T')[0],
+        date: todayParis(),
       };
 
       setState({ score, forecast, loading: false, error: null });
