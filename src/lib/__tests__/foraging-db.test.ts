@@ -13,10 +13,10 @@ import {
 } from '../foraging-db';
 
 describe('FORAGING_SPECIES', () => {
-  it('contains 309 species', () => {
-    // 310 à l'origine, moins 1 doublon exact « Sureau noir (baies) »
-    // (deux entrées identiques dont une au calendrier faux)
-    expect(FORAGING_SPECIES.length).toBe(309);
+  it('contains 306 species', () => {
+    // 310 à l'origine, moins 4 doublons exacts supprimés (calendriers faux) :
+    // Sureau noir, Châtaigne, Cynorhodon, Mûre sauvage.
+    expect(FORAGING_SPECIES.length).toBe(306);
   });
 
   it('has mushrooms, plants and berries', () => {
